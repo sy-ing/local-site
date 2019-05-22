@@ -60,6 +60,10 @@
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[2.1.9, )"
+            },
+            "Senparc.Weixin.MP": {
+              "target": "Package",
+              "version": "[14.12.3, )"
             }
           },
           "imports": [

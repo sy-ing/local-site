@@ -10,8 +10,6 @@ namespace FrontCenter.ViewModels
     {
     }
 
-
-
     public class Input_UserRegister
     {
         public RegisterUser Parameter { get; set; }
@@ -77,15 +75,8 @@ namespace FrontCenter.ViewModels
         /// <summary>
         /// 用户角色
         /// </summary>
-        [Display(Name = "RoleCode")]
-        public string RoleCode { get; set; }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        [StringLength(2000)]
-        [Display(Name = "Remark")]
-        public String Remark { get; set; }
+        [Display(Name = "RoleID")]
+        public string RoleID { get; set; }
 
     }
 
@@ -220,15 +211,8 @@ namespace FrontCenter.ViewModels
         /// <summary>
         /// 用户角色
         /// </summary>
-        [Display(Name = "RoleCode")]
-        public string RoleCode { get; set; }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        [StringLength(2000)]
-        [Display(Name = "Remark")]
-        public String Remark { get; set; }
+        [Display(Name = "RoleID")]
+        public string RoleID { get; set; }
     }
 
 
@@ -312,28 +296,17 @@ namespace FrontCenter.ViewModels
         [Display(Name = "RoleName")]
         public string RoleName { get; set; }
 
+        /// <summary>
+        /// Email状态
+        /// </summary>
+        [Display(Name = "Status")]
+        public int Status { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
+        [DataType(DataType.DateTime)]
         [Display(Name = "AddTime")]
-        public string AddTime { get; set; }
-
-        /// <summary>
-        /// 状态
-        /// </summary>
-        [Display(Name = "Status")]
-        public int Status { get; set; }
-    }
-
-
-    public class Input_UserCheck
-    {
-        public string CheckFieldName { get; set; }
-
-        public string CheckFieldValue { get; set; }
-
-        public string UserCode { get; set; }
-
+        public DateTime AddTime { get; set; }
     }
 }
