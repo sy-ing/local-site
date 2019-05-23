@@ -59,6 +59,47 @@ namespace FrontCenter.AppCode
         {
             return await dbContext.Account.SingleOrDefaultAsync(i => i.ID == _AccountID);
         }
+
+        public static string GetRandomStr(int length, ContextString dbContext)
+        {
+
+
+            Random rd = new Random();
+            string str = "abcdefghijklmnopqrstuvwxyz0123456789";
+            bool isnewstr = true;
+            string result = string.Empty;
+
+            do
+            {
+                result = string.Empty;
+                for (int i = 0; i < length; i++)
+                {
+                    result += str[rd.Next(str.Length)];
+                }
+
+                var count = dbContext.RandomStr.Where(i => i.Str == result).Count();
+
+                if (count <= 0)
+                {
+                    dbContext.RandomStr.Add(new RandomStr
+                    {
+                        AddTime = DateTime.Now,
+                        Code = Guid.NewGuid().ToString(),
+                        Str = result,
+                        UpdateTime = DateTime.Now
+                    });
+
+                    if (dbContext.SaveChanges() > 0)
+                    {
+                        isnewstr = false;
+                    }
+
+
+                }
+            } while (isnewstr);
+            return result;
+        }
+
         /// <summary>
         /// 创建一个用户
         /// </summary>

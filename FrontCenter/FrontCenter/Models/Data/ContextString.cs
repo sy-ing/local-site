@@ -114,9 +114,43 @@ namespace FrontCenter.Models.Data
 
         public DbSet<StoreNews> StoreNews { get; set; }
         public DbSet<NewsImg> NewsImg { get; set; }
+
+        public DbSet<AreaInfo> AreaInfo { get; set; }
+        public DbSet<MallArea> MallArea { get; set; }
+
+        public DbSet<ShopFormat> ShopFormat { get; set; }
+
+        public DbSet<ParkingLot> ParkingLot { get; set; }
+        public DbSet<ParkingSpace> ParkingSpace { get; set; }
+
+        public DbSet<RandomStr> RandomStr { get; set; }
+
+        public DbSet<ShopNum> ShopNum { get; set; }
+        public DbSet<Brand> Brand { get; set; }
+
+        public DbSet<BrandShop> BrandShop { get; set; }
+        public DbSet<BrandFormat> BrandFormat { get; set; }
+        public DbSet<Output_ShopCond> Output_ShopCond { get; set; }
+        
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<BrandShop>().ToTable("BrandShop");
+            modelBuilder.Entity<BrandFormat>().ToTable("BrandFormat");
+
+
+            modelBuilder.Entity<ShopNum>().ToTable("ShopNum");
+            modelBuilder.Entity<Brand>().ToTable("Brand");
+
+            modelBuilder.Entity<RandomStr>().ToTable("RandomStr");
+            modelBuilder.Entity<ParkingLot>().ToTable("ParkingLot");
+            modelBuilder.Entity<ParkingSpace>().ToTable("ParkingSpace");
+
+            modelBuilder.Entity<ShopFormat>().ToTable("ShopFormat");
+            modelBuilder.Entity<AreaInfo>().ToTable("AreaInfo");
+            modelBuilder.Entity<MallArea>().ToTable("MallArea");
+
             modelBuilder.Entity<StoreNews>().ToTable("StoreNews");
             modelBuilder.Entity<NewsImg>().ToTable("NewsImg");
             modelBuilder.Entity<ShopAccount>().ToTable("ShopAccount");
