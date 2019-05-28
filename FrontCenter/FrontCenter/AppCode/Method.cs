@@ -33,6 +33,14 @@ namespace FrontCenter.AppCode
 
         public static string OSSServer { get; set; }
 
+        public static string MallSite { get; set; }
+
+
+        //客户唯一代码
+        public static string CusID { get; set; }
+
+
+
         /// <summary>
         /// 判断服务器是否有此用户
         /// </summary>

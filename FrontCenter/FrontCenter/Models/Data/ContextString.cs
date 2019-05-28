@@ -131,10 +131,14 @@ namespace FrontCenter.Models.Data
         public DbSet<BrandShop> BrandShop { get; set; }
         public DbSet<BrandFormat> BrandFormat { get; set; }
         public DbSet<Output_ShopCond> Output_ShopCond { get; set; }
-        
+
+        public DbSet<Menu> Menu { get; set; }
+
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Menu>().ToTable("Menu");
+
 
             modelBuilder.Entity<BrandShop>().ToTable("BrandShop");
             modelBuilder.Entity<BrandFormat>().ToTable("BrandFormat");

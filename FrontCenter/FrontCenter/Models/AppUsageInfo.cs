@@ -9,15 +9,9 @@ namespace FrontCenter.Models
     /// <summary>
     /// 应用使用信息
     /// </summary>
-    public class AppUsageInfo
+    public class AppUsageInfo:Base
     {
-        /// <summary>
-        /// ID
-        /// </summary>
-        [Required]
-        [Display(Name = "ID")]
-        public int ID { get; set; }
-
+      
         /// <summary>
         /// 设备编号
         /// </summary>
@@ -43,12 +37,8 @@ namespace FrontCenter.Models
         [Display(Name = "ExpiryDate")]
         public string ExpiryDate { get; set; }
 
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        [DataType(DataType.DateTime)]
-        [Display(Name = "AddTime")]
-        public DateTime AddTime { get; set; }
+
+
 
         /// <summary>
         /// 是否被删除

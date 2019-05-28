@@ -6,15 +6,8 @@ using System.Threading.Tasks;
 
 namespace FrontCenter.Models
 {
-    public class ApplicationDevice
+    public class ApplicationDevice:Base
     {
-        /// <summary>
-        /// ID
-        /// </summary>
-        [Required]
-        [Display(Name = "ID")]
-        public int ID { get; set; }
-
         /// <summary>
         /// 应用ID
         /// </summary>
@@ -41,12 +34,7 @@ namespace FrontCenter.Models
         [Display(Name = "State")]
         public int State { get; set; }
 
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        [DataType(DataType.DateTime)]
-        [Display(Name = "AddTime")]
-        public DateTime AddTime { get; set; }
+    
 
         /// <summary>
         /// 是否被删除

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FrontCenter.Models;
+using FrontCenter.AppCode;
 
 namespace FrontCenter.Controllers
 {
@@ -14,6 +15,7 @@ namespace FrontCenter.Controllers
         {
             return View();
         }
+
 
         public IActionResult About()
         {

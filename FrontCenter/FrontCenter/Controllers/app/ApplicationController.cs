@@ -1254,7 +1254,7 @@ namespace FrontCenter.Controllers.app
                 }
             }
 
-            dbContext.AppUsageInfo.Add(new AppUsageInfo { AppID = model.AppID, DevID = model.DevID, LaunchTime = model.LaunchTime, ExpiryDate = model.ExpiryDate, AddTime = DateTime.Now, IsDel = false });
+            dbContext.AppUsageInfo.Add(new AppUsageInfo { Code = Guid.NewGuid().ToString(),UpdateTime = DateTime.Now, AppID = model.AppID, DevID = model.DevID, LaunchTime = model.LaunchTime, ExpiryDate = model.ExpiryDate, AddTime = DateTime.Now, IsDel = false });
 
             if (await dbContext.SaveChangesAsync() > 0)
             {
