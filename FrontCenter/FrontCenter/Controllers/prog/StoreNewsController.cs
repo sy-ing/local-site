@@ -89,7 +89,7 @@ namespace FrontCenter.Controllers.prog
             var isAutoPass = 1;
             foreach (var img in model.Imgs)
             {
-                var file = await dbContext.AssetFiles.Where(i => i.FileGUID == img).FirstOrDefaultAsync();
+                var file = await dbContext.AssetFiles.Where(i => i.Code == img).FirstOrDefaultAsync();
 
                 if (file == null)
                 {
@@ -222,9 +222,9 @@ namespace FrontCenter.Controllers.prog
 
                 foreach (var news in list)
                 {
-                    var Imgs = await dbContext.NewsImg.Where(i => i.NewsCode == news.Code).Join(dbContext.AssetFiles, ni => ni.Img, af => af.FileGUID, (ni, af) => new {
+                    var Imgs = await dbContext.NewsImg.Where(i => i.NewsCode == news.Code).Join(dbContext.AssetFiles, ni => ni.Img, af => af.Code, (ni, af) => new {
                         af.FilePath,
-                        af.FileGUID
+                        af.Code
                     }).ToListAsync();
 
                     newslist.Add(new
@@ -266,9 +266,9 @@ namespace FrontCenter.Controllers.prog
 
                 foreach (var news in list)
                 {
-                    var Imgs = await dbContext.NewsImg.Where(i => i.NewsCode == news.Code).Join(dbContext.AssetFiles, ni => ni.Img, af => af.FileGUID, (ni, af) => new {
+                    var Imgs = await dbContext.NewsImg.Where(i => i.NewsCode == news.Code).Join(dbContext.AssetFiles, ni => ni.Img, af => af.Code, (ni, af) => new {
                         af.FilePath,
-                        af.FileGUID
+                        af.Code
                     }).ToListAsync();
 
                     newslist.Add(new
@@ -347,9 +347,9 @@ namespace FrontCenter.Controllers.prog
             var news = await dbContext.StoreNews.Where(i => i.ShopCode == sacount.ShopCode && i.Code == model.NewsCode).FirstOrDefaultAsync();
 
 
-            var Imgs = await dbContext.NewsImg.Where(i => i.NewsCode == news.Code).Join(dbContext.AssetFiles, ni => ni.Img, af => af.FileGUID, (ni, af) => new {
+            var Imgs = await dbContext.NewsImg.Where(i => i.NewsCode == news.Code).Join(dbContext.AssetFiles, ni => ni.Img, af => af.Code, (ni, af) => new {
                 af.FilePath,
-                af.FileGUID
+                af.Code
             }).ToListAsync();
 
             _Result.Code = "200";
@@ -596,10 +596,10 @@ namespace FrontCenter.Controllers.prog
                 s.Name,
                 s.HouseNum
             }).FirstOrDefaultAsync();
-            var Imgs = await dbContext.NewsImg.Where(i => i.NewsCode == news.Code).Join(dbContext.AssetFiles, ni => ni.Img, af => af.FileGUID, (ni, af) => new {
+            var Imgs = await dbContext.NewsImg.Where(i => i.NewsCode == news.Code).Join(dbContext.AssetFiles, ni => ni.Img, af => af.Code, (ni, af) => new {
                 //FilePath = Method.ServerAddr +"/MallSite/"+ af.FilePath,
                 FilePath = Method.OSSServer + af.FilePath,
-                af.FileGUID,
+                af.Code,
                 ni.IsSuspicious,
                 af.Duration,
                 af.FileSize,

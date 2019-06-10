@@ -997,7 +997,7 @@ namespace FrontCenter.Controllers.system
         //        ap.Description,
         //        ap.Developer,
         //        ap.DevSupport,
-        //        ap.FileID,
+        //        ap.ID,
         //        ap.IconFileID,
         //        ap.ID,
         //        ap.IsDel,
@@ -1006,7 +1006,7 @@ namespace FrontCenter.Controllers.system
         //        ap.PreviewFiles,
         //        ap.ScreenInfoID,
         //        ap.Version
-        //    }).Join(dbContext.AssetFiles, ap => ap.IconFileID, af => af.FileID, (ap, af) => new
+        //    }).Join(dbContext.AssetFiles, ap => ap.IconFileID, af => af.ID, (ap, af) => new
         //    {
         //        Name = ap.Name,
         //        ID = ap.ID,
@@ -1152,7 +1152,7 @@ namespace FrontCenter.Controllers.system
                 ap.Version,
                 ap.Code,
                 ap.PlatformType
-            }).Join(dbContext.AssetFiles, ap => ap.IconFileCode, af => af.FileGUID, (ap, af) => new
+            }).Join(dbContext.AssetFiles, ap => ap.IconFileCode, af => af.Code, (ap, af) => new
             {
                 Name = ap.Name,
                 ID = ap.ID,

@@ -17,7 +17,7 @@ namespace FrontCenter.ViewModels
     {
         public string Code { get; set; }
 
-        public string FileGUID { get; set; }
+        public string FileCode { get; set; }
 
         public string Name { get; set; }
 

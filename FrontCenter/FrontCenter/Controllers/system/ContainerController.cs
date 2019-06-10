@@ -34,7 +34,7 @@ namespace FrontCenter.Controllers.system
                 var list = new ArrayList();
                 foreach (var item in screenInfo)
                 {
-                    var container = await dbContext.ContainerBG.Where(i => i.MallCode == uol.MallCode && i.ScreenCode == item.Code).Join(dbContext.AssetFiles, c => c.FileCode, af => af.FileGUID, (c, af) => new
+                    var container = await dbContext.ContainerBG.Where(i => i.MallCode == uol.MallCode && i.ScreenCode == item.Code).Join(dbContext.AssetFiles, c => c.FileCode, af => af.Code, (c, af) => new
                     {
                         FilePath = Method.OSSServer + af.FilePath,
                         c.FileCode,
@@ -95,7 +95,7 @@ namespace FrontCenter.Controllers.system
                     return Json(_Result);
                 }
 
-                var files = await dbContext.AssetFiles.Where(i => i.FileGUID == model.FileCode).FirstOrDefaultAsync();
+                var files = await dbContext.AssetFiles.Where(i => i.Code == model.FileCode).FirstOrDefaultAsync();
                 if (files == null)
                 {
                     _Result.Code = "510";
@@ -177,7 +177,7 @@ namespace FrontCenter.Controllers.system
             }
             else
             {
-                var container = await dbContext.ContainerBG.Where(i => i.ScreenCode == device.ScreenInfo).Join(dbContext.AssetFiles, c => c.FileCode, af => af.FileGUID, (c, af) => new
+                var container = await dbContext.ContainerBG.Where(i => i.ScreenCode == device.ScreenInfo).Join(dbContext.AssetFiles, c => c.FileCode, af => af.Code, (c, af) => new
                 {
                     FilePath = Method.OSSServer + af.FilePath
                 }).FirstOrDefaultAsync();

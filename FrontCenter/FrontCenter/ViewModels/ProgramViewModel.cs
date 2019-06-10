@@ -65,8 +65,8 @@ namespace FrontCenter.ViewModels
         /// <summary>
         /// 文件ID
         /// </summary>
-        [Display(Name = "FileGUID")]
-        public string FileGUID { get; set; }
+        [Display(Name = "Code")]
+        public string Code { get; set; }
 
 
         /// <summary>
@@ -139,8 +139,8 @@ namespace FrontCenter.ViewModels
         /// <summary>
         /// 文件ID
         /// </summary>
-        [Display(Name = "FileGUID")]
-        public string FileGUID { get; set; }
+        [Display(Name = "Code")]
+        public string Code { get; set; }
 
 
         /// <summary>
@@ -240,8 +240,8 @@ namespace FrontCenter.ViewModels
         /// <summary>
         /// 文件ID
         /// </summary>
-        [Display(Name = "FileGUID")]
-        public string FileGUID { get; set; }
+        [Display(Name = "FileCode")]
+        public string FileCode { get; set; }
 
 
         /// <summary>
@@ -316,8 +316,8 @@ namespace FrontCenter.ViewModels
         /// <summary>
         /// 节目ID
         /// </summary>
-        [Display(Name = "Code")]
-        public string Code { get; set; }
+        [Display(Name = "FileCode")]
+        public string FileCode { get; set; }
     }
 
     public class Input_ProgramAdd
@@ -417,8 +417,8 @@ namespace FrontCenter.ViewModels
         /// <summary>
         /// 节目文件
         /// </summary>
-        [Display(Name = "FileID")]
-        public long FileID { get; set; }
+        [Display(Name = "ID")]
+        public long ID { get; set; }
 
         /// <summary>
         /// 节目支持的屏幕

@@ -1,6 +1,7 @@
 ﻿using FrontCenter.Models;
 using FrontCenter.Models.Data;
 using FrontCenter.ViewModels;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey+ "&Type=Init";
+            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey+ "&Type=Init" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -213,7 +214,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=System";
+            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=System" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -495,6 +496,229 @@ namespace FrontCenter.AppCode
             return _Result;
         }
 
+        /// <summary>
+        /// 获取设备相关信息   
+        /// </summary>
+        /// <returns></returns>
+        public async Task<QianMuResult> PullDevData()
+        {
+            QianMuResult _Result = new QianMuResult();
+
+            DbContextOptions<ContextString> options = new DbContextOptions<ContextString>();
+            ContextString dbContext = new ContextString(options);
+
+
+            // 获取 商场
+            QMLog log = new QMLog();
+            string dtime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            string salt = "QianMu";
+            string key = salt + dtime;
+
+            string _EncryptionKey = Method.StringToPBKDF2Hash(key);
+
+            _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
+            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Dev" + "&ServerMac=" + Method.ServerMac;
+            try
+            {
+                var client = new HttpClient
+                {
+                    BaseAddress = new Uri(url)
+                };
+
+                var response = await client.GetAsync("");
+                var stream = await response.Content.ReadAsStreamAsync();
+                StreamReader myStreamReader = new StreamReader(stream, Encoding.GetEncoding("utf-8"));
+                string retString = myStreamReader.ReadToEnd();
+                var _r = (QianMuResult)Newtonsoft.Json.JsonConvert.DeserializeObject(retString, _Result.GetType());
+                //请求成功  获取文件
+                if (_r.Code == "200")
+                {
+                    Input_PullDevData syndata = new Input_PullDevData();
+                    Input_PullDevData _Syndata = (Input_PullDevData)Newtonsoft.Json.JsonConvert.DeserializeObject(_r.Data.ToString(), syndata.GetType());
+
+                    bool nochange = true;
+
+                    //去重
+
+                    _Syndata.DevAppOnlinelist = _Syndata.DevAppOnlinelist.Distinct().ToList();
+                    _Syndata.DeviceCoordinatelist = _Syndata.DeviceCoordinatelist.Distinct().ToList();
+                    _Syndata.DeviceGrouplist = _Syndata.DeviceGrouplist.Distinct().ToList();
+                    _Syndata.Devicelist = _Syndata.Devicelist.Distinct().ToList();
+                    _Syndata.DeviceToGrouplist = _Syndata.DeviceToGrouplist.Distinct().ToList();
+
+
+                    //设备运行的应用
+                    if (_Syndata.DevAppOnlinelist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var cloudData in _Syndata.DevAppOnlinelist)
+                        {
+                            var localData = await dbContext.DevAppOnline.Where(i => i.Code == cloudData.Code).FirstOrDefaultAsync();
+
+                            if (localData == null)
+                            {
+                                localData = new DevAppOnline();
+                                SynDataHelper.MakeEqual(cloudData, localData);
+                                dbContext.DevAppOnline.Add(localData);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(cloudData, localData);
+
+                                dbContext.DevAppOnline.Update(localData);
+
+                            }
+
+
+                        }
+                    }
+
+                    //设备点位
+                    if (_Syndata.DeviceCoordinatelist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var cloudData in _Syndata.DeviceCoordinatelist)
+                        {
+                            var localData = await dbContext.DeviceCoordinate.Where(i => i.Code == cloudData.Code).FirstOrDefaultAsync();
+
+                            if (localData == null)
+                            {
+                                localData = new DeviceCoordinate();
+                                SynDataHelper.MakeEqual(cloudData, localData);
+                                dbContext.DeviceCoordinate.Add(localData);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(cloudData, localData);
+
+                                dbContext.DeviceCoordinate.Update(localData);
+
+                            }
+
+
+                        }
+                    }
+
+                    //设备组
+                    if (_Syndata.DeviceGrouplist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var cloudData in _Syndata.DeviceGrouplist)
+                        {
+                            var localData = await dbContext.DeviceGroup.Where(i => i.Code == cloudData.Code).FirstOrDefaultAsync();
+
+                            if (localData == null)
+                            {
+                                localData = new DeviceGroup();
+                                SynDataHelper.MakeEqual(cloudData, localData);
+                                dbContext.DeviceGroup.Add(localData);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(cloudData, localData);
+
+                                dbContext.DeviceGroup.Update(localData);
+
+                            }
+
+
+                        }
+                    }
+
+
+                    //设备
+                    if (_Syndata.Devicelist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var cloudData in _Syndata.Devicelist)
+                        {
+                            var localData = await dbContext.Device.Where(i => i.Code == cloudData.Code).FirstOrDefaultAsync();
+
+                            if (localData == null)
+                            {
+                                localData = new Device();
+                                SynDataHelper.MakeEqual(cloudData, localData);
+                                dbContext.Device.Add(localData);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(cloudData, localData);
+
+                                dbContext.Device.Update(localData);
+
+                            }
+
+
+                        }
+                    }
+
+
+                    //设备-组  关系
+                    if (_Syndata.DeviceToGrouplist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var cloudData in _Syndata.DeviceToGrouplist)
+                        {
+                            var localData = await dbContext.DeviceToGroup.Where(i => i.Code == cloudData.Code).FirstOrDefaultAsync();
+
+                            if (localData == null)
+                            {
+                                localData = new DeviceToGroup();
+                                SynDataHelper.MakeEqual(cloudData, localData);
+                                dbContext.DeviceToGroup.Add(localData);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(cloudData, localData);
+
+                                dbContext.DeviceToGroup.Update(localData);
+
+                            }
+
+
+                        }
+                    }
+
+
+
+
+                    if (await dbContext.SaveChangesAsync() > 0 || nochange)
+                    {
+
+
+                        _Result.Code = "200";
+                        _Result.Msg = "成功";
+                        _Result.Data = "";
+                        log.WriteLogToFile("设备数据同步成功", DateTime.Now.ToShortDateString());
+                    }
+                    else
+                    {
+                        _Result.Code = "2";
+                        _Result.Msg = "同步失败";
+                        _Result.Data = "";
+                        log.WriteLogToFile("设备数据同步失败", DateTime.Now.ToShortDateString());
+                    }
+                }
+                else
+                {
+                    _Result = _r;
+                    log.WriteLogToFile("设备数据同步失败：" + _r.Msg, DateTime.Now.ToShortDateString());
+                }
+            }
+            catch (Exception e)
+            {
+
+                _Result.Code = "500";
+                _Result.Msg = e.ToString();
+                _Result.Data = "";
+                log.WriteLogToFile("设备数据同步失败：" + e.ToString(), DateTime.Now.ToShortDateString());
+            }
+
+
+            return _Result;
+        }
+
 
         /// <summary>
         /// 获取节目相关信息   
@@ -525,7 +749,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Program";
+            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Program" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -836,7 +1060,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=App";
+            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=App" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -862,7 +1086,7 @@ namespace FrontCenter.AppCode
 
                     _Syndata.AppClassNewlist = _Syndata.AppClassNewlist.Distinct().ToList();
                     _Syndata.AppDevlist = _Syndata.AppDevlist.Distinct().ToList();
-                    _Syndata.ApplicationDevicelist = _Syndata.ApplicationDevicelist.Distinct().ToList();
+                  
                     _Syndata.ApplicationNewlist = _Syndata.ApplicationNewlist.Distinct().ToList();
                     _Syndata.AppSitelist = _Syndata.AppSitelist.Distinct().ToList();
                     _Syndata.AppTimelist = _Syndata.AppTimelist.Distinct().ToList();
@@ -919,31 +1143,7 @@ namespace FrontCenter.AppCode
                         }
                     }
 
-                    //应用设备
-                    if (_Syndata.ApplicationDevicelist.Count() > 0)
-                    {
-                        nochange = false;
-                        foreach (var cloudData in _Syndata.ApplicationDevicelist)
-                        {
-                            var localData = await dbContext.ApplicationDevice.Where(i => i.Code == cloudData.Code).FirstOrDefaultAsync();
 
-                            if (localData == null)
-                            {
-                                localData = new ApplicationDevice();
-                                SynDataHelper.MakeEqual(cloudData, localData);
-                                dbContext.ApplicationDevice.Add(localData);
-                            }
-                            else
-                            {
-                                SynDataHelper.MakeEqual(cloudData, localData);
-
-                                dbContext.ApplicationDevice.Update(localData);
-
-                            }
-
-
-                        }
-                    }
 
 
                     //应用
@@ -1116,7 +1316,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Review";
+            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Review" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -1400,20 +1600,20 @@ namespace FrontCenter.AppCode
                         _Result.Code = "200";
                         _Result.Msg = "成功";
                         _Result.Data = "";
-                        log.WriteLogToFile("应用数据同步成功", DateTime.Now.ToShortDateString());
+                        log.WriteLogToFile("订单数据同步成功", DateTime.Now.ToShortDateString());
                     }
                     else
                     {
                         _Result.Code = "2";
                         _Result.Msg = "同步失败";
                         _Result.Data = "";
-                        log.WriteLogToFile("应用数据同步失败", DateTime.Now.ToShortDateString());
+                        log.WriteLogToFile("订单数据同步失败", DateTime.Now.ToShortDateString());
                     }
                 }
                 else
                 {
                     _Result = _r;
-                    log.WriteLogToFile("应用数据同步失败：" + _r.Msg, DateTime.Now.ToShortDateString());
+                    log.WriteLogToFile("订单数据同步失败：" + _r.Msg, DateTime.Now.ToShortDateString());
                 }
             }
             catch (Exception e)
@@ -1422,7 +1622,7 @@ namespace FrontCenter.AppCode
                 _Result.Code = "500";
                 _Result.Msg = e.ToString();
                 _Result.Data = "";
-                log.WriteLogToFile("应用数据同步失败：" + e.ToString(), DateTime.Now.ToShortDateString());
+                log.WriteLogToFile("订单数据同步失败：" + e.ToString(), DateTime.Now.ToShortDateString());
             }
 
 
@@ -1452,7 +1652,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=ShopInfo";
+            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=ShopInfo" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -1791,20 +1991,20 @@ namespace FrontCenter.AppCode
                         _Result.Code = "200";
                         _Result.Msg = "成功";
                         _Result.Data = "";
-                        log.WriteLogToFile("应用数据同步成功", DateTime.Now.ToShortDateString());
+                        log.WriteLogToFile("店铺数据同步成功", DateTime.Now.ToShortDateString());
                     }
                     else
                     {
                         _Result.Code = "2";
                         _Result.Msg = "同步失败";
                         _Result.Data = "";
-                        log.WriteLogToFile("应用数据同步失败", DateTime.Now.ToShortDateString());
+                        log.WriteLogToFile("店铺数据同步失败", DateTime.Now.ToShortDateString());
                     }
                 }
                 else
                 {
                     _Result = _r;
-                    log.WriteLogToFile("应用数据同步失败：" + _r.Msg, DateTime.Now.ToShortDateString());
+                    log.WriteLogToFile("店铺数据同步失败：" + _r.Msg, DateTime.Now.ToShortDateString());
                 }
             }
             catch (Exception e)
@@ -1813,7 +2013,154 @@ namespace FrontCenter.AppCode
                 _Result.Code = "500";
                 _Result.Msg = e.ToString();
                 _Result.Data = "";
-                log.WriteLogToFile("应用数据同步失败：" + e.ToString(), DateTime.Now.ToShortDateString());
+                log.WriteLogToFile("店铺数据同步失败：" + e.ToString(), DateTime.Now.ToShortDateString());
+            }
+
+
+            return _Result;
+        }
+
+
+
+        /// <summary>
+        /// 获取商场及店铺相关信息   
+        /// </summary>
+        /// <returns></returns>
+        public async Task<QianMuResult> PullFileData()
+        {
+            QianMuResult _Result = new QianMuResult();
+
+            DbContextOptions<ContextString> options = new DbContextOptions<ContextString>();
+            ContextString dbContext = new ContextString(options);
+
+
+            // 获取 商场
+            QMLog log = new QMLog();
+            string dtime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+            string salt = "QianMu";
+            string key = salt + dtime;
+
+            string _EncryptionKey = Method.StringToPBKDF2Hash(key);
+
+            _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
+            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=File"+"&ServerMac="+Method.ServerMac + "&ServerMac=" + Method.ServerMac;
+            try
+            {
+                var client = new HttpClient
+                {
+                    BaseAddress = new Uri(url)
+                };
+
+                var response = await client.GetAsync("");
+                var stream = await response.Content.ReadAsStreamAsync();
+                StreamReader myStreamReader = new StreamReader(stream, Encoding.GetEncoding("utf-8"));
+                string retString = myStreamReader.ReadToEnd();
+                var _r = (QianMuResult)Newtonsoft.Json.JsonConvert.DeserializeObject(retString, _Result.GetType());
+                //请求成功  获取文件
+                if (_r.Code == "200")
+                {
+                    Input_PullFileData syndata = new Input_PullFileData();
+                    Input_PullFileData _Syndata = (Input_PullFileData)Newtonsoft.Json.JsonConvert.DeserializeObject(_r.Data.ToString(), syndata.GetType());
+
+                    bool nochange = true;
+
+                    //去重
+
+
+                    _Syndata.AssetFilelist = _Syndata.AssetFilelist.Distinct().ToList();
+                   
+
+                    //区域
+                    if (_Syndata.AssetFilelist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var cloudData in _Syndata.AssetFilelist)
+                        {
+                            var localData = await dbContext.AssetFiles.Where(i => i.Code == cloudData.Code).FirstOrDefaultAsync();
+
+                            if (localData == null)
+                            {
+                                dbContext.AssetFiles.Add(new AssetFile
+                                {
+                                    AddTime = cloudData.AddTime,
+                                    Duration = cloudData.Duration,
+                                    FileExtName = cloudData.FileExtName,
+                                    Code = cloudData.Code,
+                                    FileHash = cloudData.FileHash,
+                                    FileName = cloudData.FileName,
+                                    FilePath = cloudData.FilePath,
+                                    FileSize = cloudData.FileSize,
+                                    FileType = cloudData.FileType,
+                                    Height = cloudData.Height,
+                                    UpdateTime = cloudData.UpdateTime,
+                                    Width = cloudData.Width
+                                });
+
+                                dbContext.FileToBeDown.Add(new FileToBeDown
+                                {
+                                    AddTime = DateTime.Now,
+                                    Code = Guid.NewGuid().ToString(),
+                                    FileCode = cloudData.Code,
+                                    StartNum = 0,
+                                    UpdateTime = DateTime.Now
+                                });
+                            }
+                            else
+                            {
+                                localData.AddTime = cloudData.AddTime;
+                                localData.Duration = cloudData.Duration;
+                                localData.FileExtName = cloudData.FileExtName;
+                                localData.Code = cloudData.Code;
+                                localData.FileHash = cloudData.FileHash;
+                                localData.FileName = cloudData.FileName;
+                                localData.FilePath = cloudData.FilePath;
+                                localData.FileSize = cloudData.FileSize;
+                                localData.FileType = cloudData.FileType;
+                                localData.Height = cloudData.Height;
+                                localData.UpdateTime = cloudData.UpdateTime;
+                                localData.Width = cloudData.Width;
+
+                                dbContext.AssetFiles.Update(localData);
+
+
+
+                            }
+
+
+                        }
+                    }
+
+                   if (await dbContext.SaveChangesAsync() > 0 || nochange)
+                    {
+
+                        var _thisjobId = BackgroundJob.Schedule(() => Method.StartDownTask(), TimeSpan.FromSeconds(5));
+                        _Result.Code = "200";
+                        _Result.Msg = "成功";
+                        _Result.Data = "";
+                        log.WriteLogToFile("文件数据同步成功", DateTime.Now.ToShortDateString());
+                    }
+                    else
+                    {
+                        _Result.Code = "2";
+                        _Result.Msg = "同步失败";
+                        _Result.Data = "";
+                        log.WriteLogToFile("文件数据同步失败", DateTime.Now.ToShortDateString());
+                    }
+                }
+                else
+                {
+                    _Result = _r;
+                    log.WriteLogToFile("文件数据同步失败：" + _r.Msg, DateTime.Now.ToShortDateString());
+                }
+            }
+            catch (Exception e)
+            {
+
+                _Result.Code = "500";
+                _Result.Msg = e.ToString();
+                _Result.Data = "";
+                log.WriteLogToFile("文件数据同步失败：" + e.ToString(), DateTime.Now.ToShortDateString());
             }
 
 

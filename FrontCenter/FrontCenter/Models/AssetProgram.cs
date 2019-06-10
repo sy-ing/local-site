@@ -26,8 +26,8 @@ namespace FrontCenter.Models
         /// <summary>
         /// 节目文件
         /// </summary>
-        [Display(Name = "FileID")]
-        public long FileID { get; set; }
+        [Display(Name = "FileCode")]
+        public string FileCode { get; set; }
 
         /// <summary>
         /// 节目支持的屏幕

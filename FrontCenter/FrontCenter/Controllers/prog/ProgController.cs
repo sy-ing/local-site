@@ -101,24 +101,24 @@ namespace FrontCenter.Controllers.prog
                         return Json(_Result);
                     }
 
-                    var file = await dbContext.AssetFiles.Where(i => i.FileGUID == pf.FileGUID).FirstOrDefaultAsync();
+                    var file = await dbContext.AssetFiles.Where(i => i.Code == pf.Code).FirstOrDefaultAsync();
                     if (file == null)
                     {
 
                         _Result.Code = "510";
-                        _Result.Msg = "无效的素材编码：" + pf.FileGUID;
+                        _Result.Msg = "无效的素材编码：" + pf.Code;
                         _Result.Data = "";
                         return Json(_Result);
                     }
 
                     if (string.IsNullOrEmpty(pf.PreviewFileGUID))
                     {
-                        pf.PreviewFileGUID = pf.FileGUID;
+                        pf.PreviewFileGUID = pf.Code;
                         p.PreviewSrc = file.FilePath;
                     }
                     else
                     {
-                        var pfile = await dbContext.AssetFiles.Where(i => i.FileGUID == pf.PreviewFileGUID).FirstOrDefaultAsync();
+                        var pfile = await dbContext.AssetFiles.Where(i => i.Code == pf.PreviewFileGUID).FirstOrDefaultAsync();
                         if (pfile == null)
                         {
 
@@ -146,7 +146,7 @@ namespace FrontCenter.Controllers.prog
                     p.Code = Guid.NewGuid().ToString();
                     p.UpdateTime = DateTime.Now;
 
-                    p.FileGuid = pf.FileGUID;
+                    p.Code = pf.Code;
                     p.PreviewFileGuid = pf.PreviewFileGUID;
 
 
@@ -233,24 +233,24 @@ namespace FrontCenter.Controllers.prog
                     return Json(_Result);
                 }
 
-                var file = await dbContext.AssetFiles.Where(i => i.FileGUID == model.FileGUID).FirstOrDefaultAsync();
+                var file = await dbContext.AssetFiles.Where(i => i.Code == model.Code).FirstOrDefaultAsync();
                 if (file == null)
                 {
 
                     _Result.Code = "510";
-                    _Result.Msg = "无效的素材编码：" + model.FileGUID;
+                    _Result.Msg = "无效的素材编码：" + model.Code;
                     _Result.Data = "";
                     return Json(_Result);
                 }
 
                 if (string.IsNullOrEmpty(model.PreviewFileGUID))
                 {
-                    model.PreviewFileGUID = model.FileGUID;
+                    model.PreviewFileGUID = model.Code;
                     p.PreviewSrc = file.FilePath;
                 }
                 else
                 {
-                    var pfile = await dbContext.AssetFiles.Where(i => i.FileGUID == model.PreviewFileGUID).FirstOrDefaultAsync();
+                    var pfile = await dbContext.AssetFiles.Where(i => i.Code == model.PreviewFileGUID).FirstOrDefaultAsync();
                     if (pfile == null)
                     {
 
@@ -276,7 +276,7 @@ namespace FrontCenter.Controllers.prog
                 p.ProgType = file.FileType;
                 p.UpdateTime = DateTime.Now;
 
-                p.FileGuid = model.FileGUID;
+                p.Code = model.Code;
                 p.PreviewFileGuid = model.PreviewFileGUID;
 
 
@@ -369,7 +369,7 @@ namespace FrontCenter.Controllers.prog
                 ).Join(dbContext.ScreenInfo, p => p.ProgScreenInfo, si => si.Code, (p, si) => new
                 {
                     p.Code,
-                    p.FileGuid,
+                    p.FileCode,
                     p.PreviewFileGuid,
                     PreviewSrc = p.PreviewSrc,
                     ProgSrc = p.ProgSrc,
@@ -383,9 +383,9 @@ namespace FrontCenter.Controllers.prog
                     p.SwitchTime,
                     p.ScreenMatch,
                     p.AddTime
-                }).Join(dbContext.AssetFiles, p => p.FileGuid, af => af.FileGUID, (p, af) => new {
+                }).Join(dbContext.AssetFiles, p => p.Code, af => af.Code, (p, af) => new {
                     p.Code,
-                    p.FileGuid,
+                    p.FileCode,
                     p.PreviewFileGuid,
                     p.PreviewSrc,
                     p.ProgSrc,
@@ -449,7 +449,7 @@ namespace FrontCenter.Controllers.prog
                         arrayList.Add(new
                         {
                             p.Code,
-                            p.FileGuid,
+                            p.FileCode,
                             p.PreviewFileGuid,
                             PreviewSrc = Method.OSSServer + p.PreviewSrc,
                             ProgSrc = Method.OSSServer + p.ProgSrc,
@@ -513,7 +513,7 @@ namespace FrontCenter.Controllers.prog
                         arrayList.Add(new
                         {
                             p.Code,
-                            p.FileGuid,
+                            p.FileCode,
                             p.PreviewFileGuid,
                             PreviewSrc = Method.OSSServer + p.PreviewSrc,
                             ProgSrc = Method.OSSServer + p.ProgSrc,

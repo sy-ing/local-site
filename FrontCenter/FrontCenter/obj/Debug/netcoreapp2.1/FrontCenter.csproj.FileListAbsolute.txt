@@ -1,8 +1,3 @@
-D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.csproj.CoreCompileInputs.cache
-D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.RazorAssemblyInfo.cache
-D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.RazorAssemblyInfo.cs
-D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.AssemblyInfoInputs.cache
-D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.AssemblyInfo.cs
 D:\sying\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.deps.json
 D:\sying\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.runtimeconfig.json
 D:\sying\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.runtimeconfig.dev.json
@@ -10,6 +5,11 @@ D:\sying\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.
 D:\sying\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.pdb
 D:\sying\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.Views.dll
 D:\sying\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.Views.pdb
+D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.csproj.CoreCompileInputs.cache
+D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.RazorAssemblyInfo.cache
+D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.RazorAssemblyInfo.cs
+D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.AssemblyInfoInputs.cache
+D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.AssemblyInfo.cs
 D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.TagHelpers.input.cache
 D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.TagHelpers.output.cache
 D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.RazorCoreGenerate.cache
@@ -29,4 +29,3 @@ D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.
 D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.dll
 D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.pdb
 D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.csproj.CopyComplete
-D:\sying\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.csprojAssemblyReference.cache

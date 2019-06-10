@@ -587,7 +587,7 @@ namespace FrontCenter.Controllers.prog
             }).OrderBy(i => i.AuditOrder).ToListAsync();
             auditList.AddRange(noAuditList);
 
-            var files = await dbContext.ProgramMaterial.Where(i => i.ProgramOrderCode == model.OrderCode).Join(dbContext.AssetFiles, p => p.FileCode, f => f.FileGUID, (p, f) => new {
+            var files = await dbContext.ProgramMaterial.Where(i => i.ProgramOrderCode == model.OrderCode).Join(dbContext.AssetFiles, p => p.FileCode, f => f.Code, (p, f) => new {
                 p.PreviewFileCode,
                 p.ProgramOrderCode,
                 p.ProgType,

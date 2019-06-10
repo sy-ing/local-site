@@ -88,9 +88,9 @@ namespace FrontCenter.Models
         /// <summary>
         /// 节目文件
         /// </summary>
-        [Display(Name = "FileGuid")]
+        [Display(Name = "FileCode")]
         [StringLength(255)]
-        public string FileGuid { get; set; }
+        public string FileCode { get; set; }
 
         /// <summary>
         /// 预览文件

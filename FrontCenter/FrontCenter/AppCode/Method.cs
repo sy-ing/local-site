@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -25,6 +26,8 @@ namespace FrontCenter.AppCode
 
         public static IConfigurationRoot Configuration { get; set; }
 
+        public static ContextString _context { get; set; }
+
         //服务器地址
         public static string ServerAddr { get; set; }
 
@@ -35,6 +38,7 @@ namespace FrontCenter.AppCode
 
         public static string MallSite { get; set; }
 
+        public static string ServerMac { get; set; }
 
         //客户唯一代码
         public static string CusID { get; set; }
@@ -56,6 +60,23 @@ namespace FrontCenter.AppCode
             }
             return _R;
         }
+
+        public static string GetServerMac()
+        {
+            var networks = NetworkInterface.GetAllNetworkInterfaces();
+            string macAddressStr = string.Empty;
+            foreach (var network in networks)
+            {
+                if (network.NetworkInterfaceType == NetworkInterfaceType.Ethernet)
+                {
+                    var physicalAddress = network.GetPhysicalAddress();
+                    macAddressStr = string.Join(":", physicalAddress.GetAddressBytes().Select(b => b.ToString("X2")));
+                    break;
+                }
+            }
+            return macAddressStr;
+        }
+
         /// <summary>
         /// 通过ID获取用户信息
         /// </summary>
@@ -341,6 +362,12 @@ namespace FrontCenter.AppCode
             }
 
 
+        }
+
+
+        public static async Task<bool> StartDownTask()
+        {
+            return await HttpDldFile.DownTask();
         }
     }
 }

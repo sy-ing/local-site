@@ -107,7 +107,7 @@ namespace FrontCenter.AppCode
 
                 assetfile.AddTime = DateTime.Now;
                 assetfile.FileExtName = ext;
-                assetfile.FileGUID = GUID.ToString();
+                assetfile.Code = GUID.ToString();
                 assetfile.FileHash = "";
                 assetfile.FileName = filename.Split('.').First();
                 assetfile.FilePath = @"\Files" + @"\" + GUID.ToString() + @"\" + filename;
@@ -116,7 +116,7 @@ namespace FrontCenter.AppCode
 
                 if (dbContext.SaveChanges() > 0)
                 {
-                    _Result = assetfile.FileID;
+                    _Result = assetfile.ID;
 
 
                 }
@@ -149,13 +149,13 @@ namespace FrontCenter.AppCode
         /// <param name="filepath"></param>
         /// <param name="dbContext"></param>
         /// <returns></returns>
-        public static async Task<bool> DelFile(string fileguid, ContextString dbContext)
+        public static async Task<bool> DelFile(string Code, ContextString dbContext)
         {
             bool _Result = false;
 
             try
             {
-                var file = await dbContext.AssetFiles.Where(i => i.FileGUID == fileguid).AsNoTracking().FirstOrDefaultAsync();
+                var file = await dbContext.AssetFiles.Where(i => i.Code == Code).AsNoTracking().FirstOrDefaultAsync();
                 var path = Method._hostingEnvironment.WebRootPath + file.FilePath;
                 DirectoryInfo info = new DirectoryInfo(path);
                 Directory.Delete(info.Parent.FullName, true);

@@ -36,7 +36,17 @@ namespace FrontCenter.ViewModels
         public List<SysLog> SysLoglist { get; set; }
     }
 
+    public class Input_PullDevData
+    {
+        public List<Device> Devicelist { get; set; }
+        public List<DeviceCoordinate> DeviceCoordinatelist { get; set; }
+        public List<DeviceGroup> DeviceGrouplist { get; set; }
+        public List<DeviceToGroup> DeviceToGrouplist { get; set; }
 
+
+        public List<DevAppOnline> DevAppOnlinelist { get; set; }
+
+    }
     public class Input_PullProgramData
     {
         public List<Programs> Programslist { get; set; }
@@ -113,5 +123,9 @@ namespace FrontCenter.ViewModels
 
     }
 
-    
+    public class Input_PullFileData
+    {
+
+        public List<AssetFile> AssetFilelist { get; set; }
+    }
 }

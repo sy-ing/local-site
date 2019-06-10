@@ -6,7 +6,8 @@
       "version": "2.1.1"
     },
     "configProperties": {
-      "System.GC.Server": true
+      "System.GC.Concurrent": true,
+      "System.GC.Server": false
     }
   }
 }

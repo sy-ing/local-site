@@ -267,7 +267,7 @@ namespace FrontCenter.Controllers.Information
             foreach (var sf in sfs)
             {
                 var count = await dbContext.ShopFormat.Where(i => i.ParentCode == sf.Code && !i.IsDel).CountAsync();
-                var iconFile = await dbContext.AssetFiles.Where(i => i.FileGUID == sf.IconFile).FirstOrDefaultAsync();
+                var iconFile = await dbContext.AssetFiles.Where(i => i.Code == sf.IconFile).FirstOrDefaultAsync();
                 string IconFilePath = "";
                 if (iconFile != null)
                 {
@@ -497,7 +497,7 @@ namespace FrontCenter.Controllers.Information
                 }).ToListAsync();
 
 
-                var iconFile = await dbContext.AssetFiles.Where(i => i.FileGUID == sf.IconFile).FirstOrDefaultAsync();
+                var iconFile = await dbContext.AssetFiles.Where(i => i.Code == sf.IconFile).FirstOrDefaultAsync();
                 string IconFilePath = "";
                 if (iconFile != null)
                 {
@@ -576,7 +576,7 @@ namespace FrontCenter.Controllers.Information
                     AddTime = s.AddTime.ToString("yyyy-MM-dd")
                 }).ToListAsync();
 
-                var iconFile = await dbContext.AssetFiles.Where(i => i.FileGUID == sf.IconFile).FirstOrDefaultAsync();
+                var iconFile = await dbContext.AssetFiles.Where(i => i.Code == sf.IconFile).FirstOrDefaultAsync();
                 string IconFilePath = "";
                 if (iconFile != null)
                 {

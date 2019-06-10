@@ -101,7 +101,7 @@ namespace FrontCenter.Controllers.Information
                     _Result.Data = "";
                     return Json(_Result);
                 }
-                var logofile = await dbContext.AssetFiles.Where(i => i.FileGUID == model.Logo).FirstOrDefaultAsync();
+                var logofile = await dbContext.AssetFiles.Where(i => i.Code == model.Logo).FirstOrDefaultAsync();
 
                 if (logofile == null)
                 {
@@ -478,7 +478,7 @@ namespace FrontCenter.Controllers.Information
                     _Result.Data = "";
                     return Json(_Result);
                 }
-                var logo = await dbContext.AssetFiles.Where(i => i.FileGUID == shop.Logo).FirstOrDefaultAsync();
+                var logo = await dbContext.AssetFiles.Where(i => i.Code == shop.Logo).FirstOrDefaultAsync();
                 string LogoPath = "";
 
                 if (logo != null)
@@ -718,7 +718,7 @@ namespace FrontCenter.Controllers.Information
             {
 
 
-                var logofile = await dbContext.AssetFiles.Where(i => i.FileGUID == model.Logo).FirstOrDefaultAsync();
+                var logofile = await dbContext.AssetFiles.Where(i => i.Code == model.Logo).FirstOrDefaultAsync();
 
                 if (logofile == null)
                 {
@@ -1000,7 +1000,7 @@ namespace FrontCenter.Controllers.Information
                                                                  from[Shops] a 
 	                                                                 left join ShopFormat b on a.ShopFormat = b.Code
 	                                                                 left join [Floor] c on a.FloorCode = c.Code
-	                                                                 left join AssetFile f on a.Logo = f.FileGUID
+	                                                                 left join AssetFile f on a.Logo = f.Code
 	                                                                 left join AreaInfo g on a.AreaCode = g.Code
 																	 left join MallShop h on h.ShopCode = a.Code
 																	 left join ShopNum i on i.ShopCode = a.Code
@@ -1181,7 +1181,7 @@ namespace FrontCenter.Controllers.Information
 																	 inner join [Shops] a  on h.ShopCode = a.Code 
 	                                                                 inner join ShopFormat b on a.ShopFormat = b.Code
 	                                                                 inner join [Floor] c on a.FloorCode = c.Code
-	                                                                 --left join AssetFile f on a.Logo = f.FileGUID
+	                                                                 --left join AssetFile f on a.Logo = f.Code
 	                                                                 left join AreaInfo g on a.AreaCode = g.Code
 																	 --left join MallShop h on h.ShopCode = a.Code
 																	 left join ShopNum i on i.ShopCode = a.Code
@@ -1311,7 +1311,7 @@ namespace FrontCenter.Controllers.Information
             //获取店铺LOGO 图片路径
 
             string LogoPath = "";
-            var logo = await dbContext.AssetFiles.Where(i => i.FileGUID == shop.Logo).FirstOrDefaultAsync();
+            var logo = await dbContext.AssetFiles.Where(i => i.Code == shop.Logo).FirstOrDefaultAsync();
 
             if (logo != null)
             {
@@ -1331,7 +1331,7 @@ namespace FrontCenter.Controllers.Information
 
             string Map = "";
             var floor = await dbContext.Floor.Where(i => i.Code == shop.FloorCode && !i.IsDel).FirstOrDefaultAsync();
-            var mapfile = await dbContext.AssetFiles.Where(i => i.FileGUID == floor.Map).FirstOrDefaultAsync();
+            var mapfile = await dbContext.AssetFiles.Where(i => i.Code == floor.Map).FirstOrDefaultAsync();
             if (mapfile != null)
             {
                 Map = mapfile.FilePath;

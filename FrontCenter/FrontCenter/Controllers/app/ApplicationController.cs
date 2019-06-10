@@ -87,7 +87,7 @@ namespace FrontCenter.Controllers.app
                     return Json(_Result);
                 }
 
-                var file = await dbContext.AssetFiles.Where(i => i.FileGUID == model.FileCode).FirstOrDefaultAsync();
+                var file = await dbContext.AssetFiles.Where(i => i.Code == model.FileCode).FirstOrDefaultAsync();
                 if (file == null)
                 {
 
@@ -97,7 +97,7 @@ namespace FrontCenter.Controllers.app
                     return Json(_Result);
                 }
 
-                var iconFile = await dbContext.AssetFiles.Where(i => i.FileGUID == model.IconFileCode).FirstOrDefaultAsync();
+                var iconFile = await dbContext.AssetFiles.Where(i => i.Code == model.IconFileCode).FirstOrDefaultAsync();
                 if (iconFile == null)
                 {
 
@@ -270,7 +270,7 @@ namespace FrontCenter.Controllers.app
                     return Json(_Result);
                 }
 
-                var file = await dbContext.AssetFiles.Where(i => i.FileGUID == model.FileCode).FirstOrDefaultAsync();
+                var file = await dbContext.AssetFiles.Where(i => i.Code == model.FileCode).FirstOrDefaultAsync();
                 if (file == null)
                 {
                     _Result.Code = "510";
@@ -279,7 +279,7 @@ namespace FrontCenter.Controllers.app
                     return Json(_Result);
                 }
 
-                var iconFile = await dbContext.AssetFiles.Where(i => i.FileGUID == model.IconFileCode).FirstOrDefaultAsync();
+                var iconFile = await dbContext.AssetFiles.Where(i => i.Code == model.IconFileCode).FirstOrDefaultAsync();
                 if (iconFile == null)
                 {
 
@@ -381,7 +381,7 @@ namespace FrontCenter.Controllers.app
                     a.Version,
                     s.SName,
                     a.ScreenInfoCode
-                }).Join(dbContext.AssetFiles, a => a.IconFileCode, af => af.FileGUID, (a, af) => new {
+                }).Join(dbContext.AssetFiles, a => a.IconFileCode, af => af.Code, (a, af) => new {
                     a.Name,
                     a.AppClass,
                     a.AppID,
@@ -714,8 +714,8 @@ namespace FrontCenter.Controllers.app
                     if (_NewDeviceCode.Count > 0)
                     {
                         var deviceList = dbContext.Device.Where(i => _NewDeviceCode.Contains(i.Code)).ToList();
-                        var file = await dbContext.AssetFiles.Where(i => i.FileGUID == application.FileCode).FirstOrDefaultAsync();
-                        var iconFile = await dbContext.AssetFiles.Where(i => i.FileGUID == application.IconFileCode).FirstOrDefaultAsync();
+                        var file = await dbContext.AssetFiles.Where(i => i.Code == application.FileCode).FirstOrDefaultAsync();
+                        var iconFile = await dbContext.AssetFiles.Where(i => i.Code == application.IconFileCode).FirstOrDefaultAsync();
                         foreach (var item in deviceList)
                         {
                             var app = await dbContext.AppDev.Where(i => i.DevCode == item.Code && i.AppCode == model.AppCode).FirstOrDefaultAsync();
@@ -781,7 +781,7 @@ namespace FrontCenter.Controllers.app
         public async Task<IActionResult> GetAppList([FromServices] ContextString dbContext)
         {
             QianMuResult _Result = new QianMuResult();
-            var apps = await dbContext.Application.Where(i => i.IsDel == false).Join(dbContext.AssetFiles, ap => ap.IconFileID, af => af.FileID, (ap, af) => new
+            var apps = await dbContext.Application.Where(i => i.IsDel == false).Join(dbContext.AssetFiles, ap => ap.IconFileID, af => af.ID, (ap, af) => new
             {
                 Name = ap.Name,
                 ID = ap.ID,
@@ -882,7 +882,7 @@ namespace FrontCenter.Controllers.app
                 _Result.Data = "";
                 return Json(_Result);
             }
-            var apps = await dbContext.ApplicationNew.Where(i => i.MallCode == uol.MallCode && i.IsDel == false).Join(dbContext.AssetFiles, ap => ap.IconFileCode, af => af.FileGUID, (ap, af) => new
+            var apps = await dbContext.ApplicationNew.Where(i => i.MallCode == uol.MallCode && i.IsDel == false).Join(dbContext.AssetFiles, ap => ap.IconFileCode, af => af.Code, (ap, af) => new
             {
                 Name = ap.Name,
                 ID = ap.ID,
@@ -1182,11 +1182,11 @@ namespace FrontCenter.Controllers.app
                 _Result.Data = "";
                 return Json(_Result);
             }
-            var iconfile = await dbContext.AssetFiles.Where(i => i.FileID == app.IconFileID).Select(s => new { IconFilePath = Method.OSSServer + s.FilePath.ToString() }).AsNoTracking().FirstOrDefaultAsync();
+            var iconfile = await dbContext.AssetFiles.Where(i => i.ID == app.IconFileID).Select(s => new { IconFilePath = Method.OSSServer + s.FilePath.ToString() }).AsNoTracking().FirstOrDefaultAsync();
             List<long> PreviewFileIDs = new List<long>();
             //  PreviewFileIDs = app.PreviewFiles.Split(',').Select(i => Convert.ToInt64(i)).ToList();
 
-            // var PreviewFiles = await dbContext.AssetFiles.Where(i => PreviewFileIDs.Contains(i.FileID)).Select(s => new { FilePath = Method.ServerAddr + s.FilePath.ToString() }).AsNoTracking().ToListAsync();
+            // var PreviewFiles = await dbContext.AssetFiles.Where(i => PreviewFileIDs.Contains(i.ID)).Select(s => new { FilePath = Method.ServerAddr + s.FilePath.ToString() }).AsNoTracking().ToListAsync();
 
 
             var appinfo = new { app.ID, app.Name, app.NameEn, app.AppClass, app.AppSecClass, iconfile.IconFilePath, HardwareLabel = app.DevSupport, app.Description };
@@ -1713,7 +1713,7 @@ namespace FrontCenter.Controllers.app
                 ap.Version,
                 ap.Code,
                 ap.PlatformType
-            }).Join(dbContext.AssetFiles, ap => ap.IconFileCode, af => af.FileGUID, (ap, af) => new
+            }).Join(dbContext.AssetFiles, ap => ap.IconFileCode, af => af.Code, (ap, af) => new
             {
                 Name = ap.Name,
                 ID = ap.ID,

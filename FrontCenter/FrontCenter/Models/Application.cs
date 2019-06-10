@@ -124,8 +124,8 @@ namespace FrontCenter.Models
         /// <summary>
         /// 文件的ID
         /// </summary>
-        [Display(Name = "FileID")]
-        public long FileID { get; set; }
+        [Display(Name = "FileCode")]
+        public string FileCode { get; set; }
 
 
         /// <summary>

@@ -422,7 +422,7 @@ namespace FrontCenter.Controllers.Information
             ArrayList arrayList = new ArrayList();
             foreach (var pl in list)
             {
-                var assetFiles = await dbContext.AssetFiles.Where(i => i.FileGUID == pl.Map).FirstOrDefaultAsync();
+                var assetFiles = await dbContext.AssetFiles.Where(i => i.Code == pl.Map).FirstOrDefaultAsync();
                 arrayList.Add(new
                 {
                     pl.ID,
@@ -447,7 +447,7 @@ namespace FrontCenter.Controllers.Information
             //    Name = bu.BName + fl.Name,
             //    FCode = fl.Code
 
-            //}).Join(dbContext.AssetFiles, fl => fl.Map, af => af.FileGUID, (fl, af) => new
+            //}).Join(dbContext.AssetFiles, fl => fl.Map, af => af.Code, (fl, af) => new
             //{
             //    //Map = Method.ServerAddr + "/MallSite/" + af.FilePath,
             //    Map = Method.OSSServer + af.FilePath,
@@ -481,7 +481,7 @@ namespace FrontCenter.Controllers.Information
                 pl.FloorCode,
                 Name = bu.Name + pl.Name,
                 pl.Map
-            }).Join(dbContext.AssetFiles, pl => pl.Map, af => af.FileGUID, (pl, af) => new {
+            }).Join(dbContext.AssetFiles, pl => pl.Map, af => af.Code, (pl, af) => new {
                 pl.ID,
                 pl.Code,
                 pl.FloorCode,

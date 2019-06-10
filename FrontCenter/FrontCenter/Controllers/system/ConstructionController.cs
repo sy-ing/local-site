@@ -103,7 +103,7 @@ namespace FrontCenter.Controllers.system
             ArrayList list = new ArrayList();
             foreach (var floor in floors)
             {
-                var map = await dbContext.AssetFiles.Where(i => i.FileGUID == floor.Map).FirstOrDefaultAsync();
+                var map = await dbContext.AssetFiles.Where(i => i.Code == floor.Map).FirstOrDefaultAsync();
                 if (map == null)
                 {
 
@@ -139,7 +139,7 @@ namespace FrontCenter.Controllers.system
                 }
             }
 
-            //var floors = await dbContext.Floors.Where(i => i.BuildingID == (int)id).Join(dbContext.AssetFiles, fl => fl.Map, af => af.FileID, (fl, af) => new {
+            //var floors = await dbContext.Floors.Where(i => i.BuildingID == (int)id).Join(dbContext.AssetFiles, fl => fl.Map, af => af.ID, (fl, af) => new {
             //    fl.AddTime,
             //    fl.Name,
             //    fl.Order,
@@ -230,7 +230,7 @@ namespace FrontCenter.Controllers.system
                     foreach (var f in floors)
                     {
                         string Map = string.Empty;
-                        var mapfile = await dbContext.AssetFiles.Where(i => i.FileGUID == f.Map).FirstOrDefaultAsync();
+                        var mapfile = await dbContext.AssetFiles.Where(i => i.Code == f.Map).FirstOrDefaultAsync();
                         if (mapfile != null)
                         {
                             //Map = Method.ServerAddr + "/MallSite/" + mapfile.FilePath;
@@ -296,7 +296,7 @@ namespace FrontCenter.Controllers.system
                 }
             }
 
-            //if (string.IsNullOrEmpty(model.Code) || string.IsNullOrEmpty(model.FileGUID))
+            //if (string.IsNullOrEmpty(model.Code) || string.IsNullOrEmpty(model.Code))
             if (string.IsNullOrEmpty(model.Code))
             {
 
@@ -320,9 +320,9 @@ namespace FrontCenter.Controllers.system
                 _Result.Data = "";
                 return Json(_Result);
             }
-            if (!string.IsNullOrEmpty(model.FileGUID))
+            if (!string.IsNullOrEmpty(model.Code))
             {
-                var file = await dbContext.AssetFiles.Where(i => i.FileGUID == model.FileGUID).FirstOrDefaultAsync();
+                var file = await dbContext.AssetFiles.Where(i => i.Code == model.Code).FirstOrDefaultAsync();
 
                 if (file == null)
                 {
@@ -339,7 +339,7 @@ namespace FrontCenter.Controllers.system
                     _Result.Data = "";
                     return Json(_Result);
                 }
-                floor.Map = model.FileGUID;
+                floor.Map = model.Code;
             }
             floor.Name = model.Name;
             floor.UpdateTime = DateTime.Now;
@@ -486,7 +486,7 @@ namespace FrontCenter.Controllers.system
                 _Result.Data = "";
                 return Json(_Result);
             }
-            var map = await dbContext.AssetFiles.Where(i => i.FileGUID == floor.Map).FirstOrDefaultAsync();
+            var map = await dbContext.AssetFiles.Where(i => i.Code == floor.Map).FirstOrDefaultAsync();
             if (map == null)
             {
 
@@ -507,7 +507,7 @@ namespace FrontCenter.Controllers.system
                     floor.Code,
                     //Map = Method.ServerAddr + "/MallSite/" + map.FilePath,
                     Map = Method.OSSServer + map.FilePath,
-                    MapCode = map.FileGUID
+                    MapCode = map.Code
                 };
             }
 
@@ -554,7 +554,7 @@ namespace FrontCenter.Controllers.system
                 foreach (var f in floors)
                 {
                     string Map = string.Empty;
-                    var mapfile = await dbContext.AssetFiles.Where(i => i.FileGUID == f.Map).FirstOrDefaultAsync();
+                    var mapfile = await dbContext.AssetFiles.Where(i => i.Code == f.Map).FirstOrDefaultAsync();
                     if (mapfile != null)
                     {
                         Map = mapfile.FilePath;

@@ -531,11 +531,11 @@ namespace FrontCenter.Controllers.device
                 //    {
                 //        p.LaunchTime,
                 //        p.ExpiryDate,
-                //        p.FileGuid,
+                //        p.Code,
                 //        p.ProgType
                 //    }
 
-                //    ).Join(dbContext.AssetFiles, p => p.FileGuid, af => af.FileGUID, (p, af) => new
+                //    ).Join(dbContext.AssetFiles, p => p.Code, af => af.Code, (p, af) => new
                 //    {
                 //        p.LaunchTime,
                 //        p.ExpiryDate,
@@ -552,13 +552,13 @@ namespace FrontCenter.Controllers.device
                      {
                          p.LaunchTime,
                          p.ExpiryDate,
-                         p.FileGuid,
+                         p.Code,
                          p.ProgType,
                          pd.AddTime,
                          pd.Order
                      }
 
-                    ).Join(dbContext.AssetFiles, p => p.FileGuid, af => af.FileGUID, (p, af) => new
+                    ).Join(dbContext.AssetFiles, p => p.Code, af => af.Code, (p, af) => new
                     {
                         p.LaunchTime,
                         p.ExpiryDate,
