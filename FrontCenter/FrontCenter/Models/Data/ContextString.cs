@@ -135,9 +135,13 @@ namespace FrontCenter.Models.Data
         public DbSet<Menu> Menu { get; set; }
 
         public DbSet<FileToBeDown> FileToBeDown { get; set; }
+        public DbSet<DeviceIOT> DeviceIOT { get; set; }
+        
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<DeviceIOT>().ToTable("DeviceIOT");
+
             modelBuilder.Entity<FileToBeDown>().ToTable("FileToBeDown");
             modelBuilder.Entity<Menu>().ToTable("Menu");
 
