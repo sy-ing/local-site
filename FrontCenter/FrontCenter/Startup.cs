@@ -54,6 +54,11 @@ namespace FrontCenter
             //注册商户管理网站地址
             Method.MallSite = Configuration.GetConnectionString("MallPlatAddress");
 
+            Method.FileServer = Configuration.GetConnectionString("FileServer");
+            
+
+            Method.BaiduIOT = Configuration.GetConnectionString("BaiduIOT");
+
             services.AddDbContext<ContextString>(options =>
  options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -141,6 +146,7 @@ namespace FrontCenter
 
             Method.ServerMac = Method.GetServerMac();
 
+            ServerIOTHelper.CreateServerToIOT();
             app.UseHttpsRedirection();
             app.UseCookiePolicy();
 
@@ -167,6 +173,11 @@ namespace FrontCenter
                 {
                     Authorization = new[] { new CustomAuthorizeFilter() }
                 });
+
+                //更新服务器状态
+                RecurringJob.AddOrUpdate(
+() => Method.UpdateDevState(),
+Cron.Minutely);
             }
         }
 

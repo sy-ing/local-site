@@ -24,7 +24,59 @@ namespace FrontCenter.ViewModels
 
         public string FloorCode { get; set; }
     }
+    public class DevCommand
+    {
+        /// <summary>
+        /// 命令类型
+        /// </summary>
+        [Display(Name = "Type")]
+        public string Type { get; set; }
+    }
 
+    /// <summary>
+    /// 心跳返回
+    /// </summary>
+    public class Output_DeviceHeartbeat : DevCommand
+    {
+
+        /// <summary>
+        /// 参数
+        /// </summary>
+        public string Parameter { get; set; }
+    }
+    /// <summary>
+    /// 心跳包
+    /// </summary>
+    public class Input_Heartbeat
+    {
+        [StringLength(50)]
+        [Display(Name = "Code")]
+        public string Code { get; set; }
+
+        [StringLength(255)]
+        [Display(Name = "AppName")]
+        public string AppName { get; set; }
+
+        [StringLength(255)]
+        [Display(Name = "AppNameCH")]
+        public string AppNameCH { get; set; }
+
+
+
+        /// <summary>
+        /// 应用版本
+        /// </summary>
+        [StringLength(255)]
+        [Display(Name = "AppVersion")]
+        public string AppVersion { get; set; }
+
+        /// <summary>
+        /// 容器版本
+        /// </summary>
+        [StringLength(255)]
+        [Display(Name = "ContainerVersion")]
+        public string ContainerVersion { get; set; }
+    }
     public class Input_SetSynStatus : Input_CdnBase
     {
         /// <summary>

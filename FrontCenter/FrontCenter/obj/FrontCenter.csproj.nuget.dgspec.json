@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\sying\\local-site\\FrontCenter\\FrontCenter\\FrontCenter.csproj": {}
+    "G:\\项目集合\\项目代码\\local-site\\FrontCenter\\FrontCenter\\FrontCenter.csproj": {}
   },
   "projects": {
-    "D:\\sying\\local-site\\FrontCenter\\FrontCenter\\FrontCenter.csproj": {
+    "G:\\项目集合\\项目代码\\local-site\\FrontCenter\\FrontCenter\\FrontCenter.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\sying\\local-site\\FrontCenter\\FrontCenter\\FrontCenter.csproj",
+        "projectUniqueName": "G:\\项目集合\\项目代码\\local-site\\FrontCenter\\FrontCenter\\FrontCenter.csproj",
         "projectName": "FrontCenter",
-        "projectPath": "D:\\sying\\local-site\\FrontCenter\\FrontCenter\\FrontCenter.csproj",
-        "packagesPath": "C:\\Users\\sealion\\.nuget\\packages\\",
-        "outputPath": "D:\\sying\\local-site\\FrontCenter\\FrontCenter\\obj\\",
+        "projectPath": "G:\\项目集合\\项目代码\\local-site\\FrontCenter\\FrontCenter\\FrontCenter.csproj",
+        "packagesPath": "C:\\Users\\QM-SY\\.nuget\\packages\\",
+        "outputPath": "G:\\项目集合\\项目代码\\local-site\\FrontCenter\\FrontCenter\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\sealion\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\QM-SY\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -44,6 +44,10 @@
             "Hangfire": {
               "target": "Package",
               "version": "[1.7.3, )"
+            },
+            "MQTTnet": {
+              "target": "Package",
+              "version": "[2.8.5, )"
             },
             "Microsoft.AspNetCore.App": {
               "suppressParent": "All",

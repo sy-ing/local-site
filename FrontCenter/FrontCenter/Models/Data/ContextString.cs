@@ -136,10 +136,16 @@ namespace FrontCenter.Models.Data
 
         public DbSet<FileToBeDown> FileToBeDown { get; set; }
         public DbSet<DeviceIOT> DeviceIOT { get; set; }
-        
+
+        public DbSet<DevAppDetails> DevAppDetails { get; set; }
+
+        public DbSet<ServerIOT> ServerIOT { get; set; }
+
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ServerIOT>().ToTable("ServerIOT");
+            modelBuilder.Entity<DevAppDetails>().ToTable("DevAppDetails");
             modelBuilder.Entity<DeviceIOT>().ToTable("DeviceIOT");
 
             modelBuilder.Entity<FileToBeDown>().ToTable("FileToBeDown");

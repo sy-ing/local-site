@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\FrontCenter"
+    "\\FrontCenter",
+    "\\FrontCenter\\FrontCenter"
   ],
+  "SelectedNode": "\\FrontCenter",
   "PreviewInSolutionExplorer": false
 }

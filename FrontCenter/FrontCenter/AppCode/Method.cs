@@ -1,5 +1,6 @@
 ﻿using FrontCenter.Models;
 using FrontCenter.Models.Data;
+using FrontCenter.ViewModels;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -40,10 +41,74 @@ namespace FrontCenter.AppCode
 
         public static string ServerMac { get; set; }
 
+        public static string BaiduIOT { get; set; }
+
+        public static string FileServer { get; set; }
+        
+
         //客户唯一代码
         public static string CusID { get; set; }
 
+        public static List<DeviceCommand> DeviceCommandList = new List<DeviceCommand>();
 
+        /// <summary>
+        /// 更新服务器状态
+        /// </summary>
+        public static void UpdateDevState()
+        {
+            DateTime dt = DateTime.Now;
+            try
+            {
+                QMLog qm = new QMLog();
+                qm.WriteLogToFile("", "Hangfire定时器执行");
+                DbContextOptions<ContextString> options = new DbContextOptions<ContextString>();
+                ContextString dbContext = new ContextString(options);
+                var list = dbContext.Device.ToList();
+                foreach (var dev in list)
+                {
+                    var de = Method.DeviceCommandList.Where(i => i.Code == dev.Code).FirstOrDefault();
+                    if (de == null)
+                    {
+                        dev.DeviceOnline = false;
+                        dev.FrontOnline = false;
+                    }
+                    else
+                    {
+
+                        if (de.DevBreathTime >= dt.AddMinutes(-1))
+                        {
+                            dev.DeviceOnline = true;
+                        }
+                        else
+                        {
+                            dev.DeviceOnline = false;
+                        }
+                        if (de.AppBreathTime >= dt.AddMinutes(-1))
+                        {
+                            dev.FrontOnline = true;
+                        }
+                        else
+                        {
+                            dev.FrontOnline = false;
+                        }
+
+
+
+                    }
+
+
+                }
+                dbContext.Device.UpdateRange(list);
+                dbContext.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                QMLog qm = new QMLog();
+                qm.WriteLogToFile("", e.ToString());
+            }
+
+
+        }
 
         /// <summary>
         /// 判断服务器是否有此用户
@@ -364,6 +429,37 @@ namespace FrontCenter.AppCode
 
         }
 
+        public static QianMuResult PostMothsToObj(string url, string param)
+        {
+            QianMuResult _Result = new QianMuResult();
+            string strURL = url;
+            System.Net.HttpWebRequest request;
+            request = (System.Net.HttpWebRequest)WebRequest.Create(strURL);
+            request.Method = "POST";
+            request.ContentType = "application/json;charset=UTF-8";
+            string paraUrlCoded = param;
+            byte[] payload;
+            payload = System.Text.Encoding.UTF8.GetBytes(paraUrlCoded);
+            request.ContentLength = payload.Length;
+            Stream writer = request.GetRequestStream();
+            writer.Write(payload, 0, payload.Length);
+            writer.Close();
+            System.Net.HttpWebResponse response;
+            response = (System.Net.HttpWebResponse)request.GetResponse();
+            System.IO.Stream s;
+            s = response.GetResponseStream();
+            string StrDate = "";
+            string strValue = "";
+            StreamReader Reader = new StreamReader(s, Encoding.UTF8);
+            while ((StrDate = Reader.ReadLine()) != null)
+            {
+                strValue += StrDate;
+                // strValue += StrDate + "\r\n";
+            }
+
+            var _r = (QianMuResult)Newtonsoft.Json.JsonConvert.DeserializeObject(strValue, _Result.GetType());
+            return _r;
+        }
 
         public static async Task<bool> StartDownTask()
         {
