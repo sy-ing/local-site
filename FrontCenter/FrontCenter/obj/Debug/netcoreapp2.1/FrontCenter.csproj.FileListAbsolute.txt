@@ -36,7 +36,6 @@ G:\项目集合\项目代码\local-site\FrontCenter\FrontCenter\bin\Debug\netcor
 G:\项目集合\项目代码\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.pdb
 G:\项目集合\项目代码\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.Views.dll
 G:\项目集合\项目代码\local-site\FrontCenter\FrontCenter\bin\Debug\netcoreapp2.1\FrontCenter.Views.pdb
-G:\项目集合\项目代码\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.csprojAssemblyReference.cache
 G:\项目集合\项目代码\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.csproj.CoreCompileInputs.cache
 G:\项目集合\项目代码\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.RazorAssemblyInfo.cache
 G:\项目集合\项目代码\local-site\FrontCenter\FrontCenter\obj\Debug\netcoreapp2.1\FrontCenter.RazorAssemblyInfo.cs

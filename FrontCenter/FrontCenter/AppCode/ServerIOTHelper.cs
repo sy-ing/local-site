@@ -1,7 +1,9 @@
 ﻿using FrontCenter.Models;
 using FrontCenter.Models.Data;
 using FrontCenter.ViewModels;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,9 +98,14 @@ namespace FrontCenter.AppCode
                 ServerMqttClient mqttClient = new ServerMqttClient(Method.BaiduIOT, 1883, serveriot.ServerMac, serveriot.Name, serveriot.Key);
                 
                  mqttClient.InitAsync();
+
+                var _thisjobId = BackgroundJob.Schedule(() => ServerPublishIOT(mqttClient, serveriot), TimeSpan.FromMinutes(5));
+
+
+
                 //await mqttClient.PublishAsync(serveriot.ServerMac, "online");
-             //    mqttClient.Sub();
-               // return false;
+                //    mqttClient.Sub();
+                // return false;
 
             }
             else
@@ -109,5 +116,14 @@ namespace FrontCenter.AppCode
 
 
         }
+
+        public static async  void ServerPublishIOT(ServerMqttClient mqttClient, ServerIOT serveriot)
+        {
+           await   mqttClient.PublishAsync(serveriot.ServerMac, JsonConvert.SerializeObject(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
+
+            var _thisjobId = BackgroundJob.Schedule(() => ServerPublishIOT(mqttClient, serveriot), TimeSpan.FromMinutes(5));
+        }
+
+   
     }
 }

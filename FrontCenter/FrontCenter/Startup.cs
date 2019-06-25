@@ -210,9 +210,7 @@ Cron.Minutely);
                 RecurringJob.AddOrUpdate(
 () =>  Method.PullDataFromCloud(),
 Cron.Daily());
-                RecurringJob.AddOrUpdate(
-() => ServerIOTHelper.ServerSubIOT(),
-Cron.Daily());
+
 
             }
         }
