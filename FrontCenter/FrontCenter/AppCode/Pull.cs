@@ -17,7 +17,7 @@ namespace FrontCenter.AppCode
 {
     public class Pull
     {
-        private object dbContext;
+      //  private object dbContext;
 
         /// <summary>
         /// 获取初始化信息 包含商场  权限  菜单 
@@ -43,7 +43,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey+ "&Type=Init" + "&ServerMac=" + Method.ServerMac;
+            var url = Method.MallSite + "API/Push/CloudDataSend?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey+ "&Type=Init" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -64,13 +64,40 @@ namespace FrontCenter.AppCode
 
                     bool nochange = true;
 
+                    #region 修正null值
+
+                    if (_Syndata.Malllist == null)
+                    {
+                        _Syndata.Malllist = new List<Mall>();
+                    }
+                    if (_Syndata.Menulist == null)
+                    {
+                        _Syndata.Menulist = new List<Menu>();
+                    }
+
+                    if (_Syndata.Permissionlist == null)
+                    {
+                        _Syndata.Permissionlist = new List<Permission>();
+                    }
+
+                    if (_Syndata.TimeRelatelist == null)
+                    {
+                        _Syndata.TimeRelatelist = new List<TimeRelate>();
+                    }
+                    if (_Syndata.DataDictlist == null)
+                    {
+                        _Syndata.DataDictlist = new List<DataDict>();
+                    }
+                    #endregion
+
                     //去重
 
                     _Syndata.Malllist = _Syndata.Malllist.Distinct().ToList();
                     _Syndata.Menulist = _Syndata.Menulist.Distinct().ToList();
                     _Syndata.Permissionlist = _Syndata.Permissionlist.Distinct().ToList();
-
-                
+                    _Syndata.ContainerBGlist = _Syndata.ContainerBGlist.Distinct().ToList();
+                    _Syndata.TimeRelatelist = _Syndata.TimeRelatelist.Distinct().ToList();
+                    _Syndata.DataDictlist = _Syndata.DataDictlist.Distinct().ToList();
                     //商场
                     if (_Syndata.Malllist.Count() > 0)
                     {
@@ -149,6 +176,84 @@ namespace FrontCenter.AppCode
                         }
                     }
 
+
+                    //背景图片
+                    if (_Syndata.ContainerBGlist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var containerBG in _Syndata.ContainerBGlist)
+                        {
+                            var _containerBG = await dbContext.ContainerBG.Where(i => i.Code == containerBG.Code).FirstOrDefaultAsync();
+
+                            if (_containerBG == null)
+                            {
+                                _containerBG = new ContainerBG();
+                                SynDataHelper.MakeEqual(containerBG, _containerBG);
+                                dbContext.ContainerBG.Add(_containerBG);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(containerBG, _containerBG);
+
+                                dbContext.ContainerBG.Update(_containerBG);
+
+                            }
+
+
+                        }
+                    }
+
+                    //时间轴
+                    if (_Syndata.TimeRelatelist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var timeRelate in _Syndata.TimeRelatelist)
+                        {
+                            var _timeRelate = await dbContext.TimeRelate.Where(i => i.Code == timeRelate.Code).FirstOrDefaultAsync();
+
+                            if (_timeRelate == null)
+                            {
+                                _timeRelate = new TimeRelate();
+                                SynDataHelper.MakeEqual(timeRelate, _timeRelate);
+                                dbContext.TimeRelate.Add(_timeRelate);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(timeRelate, _timeRelate);
+
+                                dbContext.TimeRelate.Update(_timeRelate);
+
+                            }
+
+
+                        }
+                    }
+
+                    //字典
+                    if (_Syndata.DataDictlist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var dataDict in _Syndata.DataDictlist)
+                        {
+                            var _dataDict = await dbContext.DataDict.Where(i => i.Code == dataDict.Code).FirstOrDefaultAsync();
+
+                            if (_dataDict == null)
+                            {
+                                _dataDict = new DataDict();
+                                SynDataHelper.MakeEqual(dataDict, _dataDict);
+                                dbContext.DataDict.Add(_dataDict);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(dataDict, _dataDict);
+
+                                dbContext.DataDict.Update(_dataDict);
+
+                            }
+
+
+                        }
+                    }
                     if (await dbContext.SaveChangesAsync() > 0 || nochange)
                     {
 
@@ -214,7 +319,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=System" + "&ServerMac=" + Method.ServerMac;
+            var url = Method.MallSite + "API/Push/CloudDataSend?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=System" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -234,6 +339,53 @@ namespace FrontCenter.AppCode
                     Input_PullSystemData _Syndata = (Input_PullSystemData)Newtonsoft.Json.JsonConvert.DeserializeObject(_r.Data.ToString(), syndata.GetType());
 
                     bool nochange = true;
+
+                    #region 修正null值
+
+                    if (_Syndata.Accountlist == null)
+                    {
+                        _Syndata.Accountlist = new List<Account>();
+                    }
+                    if (_Syndata.AuditProcesslist == null)
+                    {
+                        _Syndata.AuditProcesslist = new List<AuditProcess>();
+                    }
+
+                    if (_Syndata.RolePermissionslist == null)
+                    {
+                        _Syndata.RolePermissionslist = new List<RolePermissions>();
+                    }
+
+
+                    if (_Syndata.Roleslist == null)
+                    {
+                        _Syndata.Roleslist = new List<Roles>();
+                    }
+
+
+                    if (_Syndata.Screensaverlist == null)
+                    {
+                        _Syndata.Screensaverlist = new List<Screensaver>();
+                    }
+
+
+                    if (_Syndata.TimeAxislist == null)
+                    {
+                        _Syndata.TimeAxislist = new List<TimeAxis>();
+                    }
+
+
+                    if (_Syndata.UserRoleslist == null)
+                    {
+                        _Syndata.UserRoleslist = new List<UserRoles>();
+                    }
+
+
+                    if (_Syndata.SysLoglist == null)
+                    {
+                        _Syndata.SysLoglist = new List<SysLog>();
+                    }
+                    #endregion
 
                     //去重
 
@@ -518,7 +670,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Dev" + "&ServerMac=" + Method.ServerMac;
+            var url = Method.MallSite + "API/Push/CloudDataSend?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Dev" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -538,6 +690,38 @@ namespace FrontCenter.AppCode
                     Input_PullDevData _Syndata = (Input_PullDevData)Newtonsoft.Json.JsonConvert.DeserializeObject(_r.Data.ToString(), syndata.GetType());
 
                     bool nochange = true;
+
+                    #region 修正null值
+
+                    if (_Syndata.DevAppOnlinelist == null)
+                    {
+                        _Syndata.DevAppOnlinelist = new List<DevAppOnline>();
+                    }
+                    if (_Syndata.DeviceCoordinatelist == null)
+                    {
+                        _Syndata.DeviceCoordinatelist = new List<DeviceCoordinate>();
+                    }
+
+                    if (_Syndata.DeviceGrouplist == null)
+                    {
+                        _Syndata.DeviceGrouplist = new List<DeviceGroup>();
+                    }
+
+
+                    if (_Syndata.Devicelist == null)
+                    {
+                        _Syndata.Devicelist = new List<Device>();
+                    }
+
+
+                    if (_Syndata.DeviceToGrouplist == null)
+                    {
+                        _Syndata.DeviceToGrouplist = new List<DeviceToGroup>();
+                    }
+
+
+                
+                    #endregion
 
                     //去重
 
@@ -749,7 +933,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Program" + "&ServerMac=" + Method.ServerMac;
+            var url = Method.MallSite + "API/Push/CloudDataSend?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Program" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -769,6 +953,54 @@ namespace FrontCenter.AppCode
                     Input_PullProgramData _Syndata = (Input_PullProgramData)Newtonsoft.Json.JsonConvert.DeserializeObject(_r.Data.ToString(), syndata.GetType());
 
                     bool nochange = true;
+
+
+                    #region 修正null值
+
+                    if (_Syndata.Programslist == null)
+                    {
+                        _Syndata.Programslist = new List<Programs>();
+                    }
+                    if (_Syndata.ProgramGrouplist == null)
+                    {
+                        _Syndata.ProgramGrouplist = new List<ProgramGroup>();
+                    }
+
+                    if (_Syndata.ProgramToGrouplist == null)
+                    {
+                        _Syndata.ProgramToGrouplist = new List<ProgramToGroup>();
+                    }
+
+
+                    if (_Syndata.ProgramDevicelist == null)
+                    {
+                        _Syndata.ProgramDevicelist = new List<ProgramDevice>();
+                    }
+
+
+                    if (_Syndata.Subtitlelist == null)
+                    {
+                        _Syndata.Subtitlelist = new List<Subtitle>();
+                    }
+
+                    if (_Syndata.SubtitleToDeviceGrouplist == null)
+                    {
+                        _Syndata.SubtitleToDeviceGrouplist = new List<SubtitleToDeviceGroup>();
+                    }
+
+                    if (_Syndata.Livelist == null)
+                    {
+                        _Syndata.Livelist = new List<Live>();
+                    }
+
+                    if (_Syndata.LiveToDevlist == null)
+                    {
+                        _Syndata.LiveToDevlist = new List<LiveToDev>();
+                    }
+
+
+
+                    #endregion
 
                     //去重
 
@@ -1060,7 +1292,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=App" + "&ServerMac=" + Method.ServerMac;
+            var url = Method.MallSite + "API/Push/CloudDataSend?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=App" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -1081,9 +1313,36 @@ namespace FrontCenter.AppCode
 
                     bool nochange = true;
 
+                    #region 修正null值
+
+                    if (_Syndata.AppClassNewlist == null)
+                    {
+                        _Syndata.AppClassNewlist = new List<AppClassNew>();
+                    }
+                    if (_Syndata.AppDevlist == null)
+                    {
+                        _Syndata.AppDevlist = new List<AppDev>();
+                    }
+
+                    if (_Syndata.ApplicationNewlist == null)
+                    {
+                        _Syndata.ApplicationNewlist = new List<ApplicationNew>();
+                    }
+                    if (_Syndata.AppSitelist == null)
+                    {
+                        _Syndata.AppSitelist = new List<AppSite>();
+                    }
+                    if (_Syndata.AppTimelist == null)
+                    {
+                        _Syndata.AppTimelist = new List<AppTime>();
+                    }
+
+                    if (_Syndata.AppUsageInfolist == null)
+                    {
+                        _Syndata.AppUsageInfolist = new List<AppUsageInfo>();
+                    }
+                    #endregion
                     //去重
-
-
                     _Syndata.AppClassNewlist = _Syndata.AppClassNewlist.Distinct().ToList();
                     _Syndata.AppDevlist = _Syndata.AppDevlist.Distinct().ToList();
                   
@@ -1316,7 +1575,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Review" + "&ServerMac=" + Method.ServerMac;
+            var url = Method.MallSite + "API/Push/CloudDataSend?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=Review" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -1336,6 +1595,57 @@ namespace FrontCenter.AppCode
                     Input_PullReviewData _Syndata = (Input_PullReviewData)Newtonsoft.Json.JsonConvert.DeserializeObject(_r.Data.ToString(), syndata.GetType());
 
                     bool nochange = true;
+
+                    #region 修正null值
+
+                    if (_Syndata.OrderAuditlist == null)
+                    {
+                        _Syndata.OrderAuditlist = new List<OrderAudit>();
+                    }
+                    if (_Syndata.ProgramMateriallist == null)
+                    {
+                        _Syndata.ProgramMateriallist = new List<ProgramMaterial>();
+                    }
+
+                    if (_Syndata.ProperMateriallist == null)
+                    {
+                        _Syndata.ProperMateriallist = new List<ProperMaterial>();
+                    }
+
+
+                    if (_Syndata.ScheduleDatelist == null)
+                    {
+                        _Syndata.ScheduleDatelist = new List<ScheduleDate>();
+                    }
+
+
+                    if (_Syndata.ScheduleDevicelist == null)
+                    {
+                        _Syndata.ScheduleDevicelist = new List<ScheduleDevice>();
+                    }
+
+                    if (_Syndata.ScheduleMateriallist == null)
+                    {
+                        _Syndata.ScheduleMateriallist = new List<ScheduleMaterial>();
+                    }
+
+                    if (_Syndata.ScheduleOrderlist == null)
+                    {
+                        _Syndata.ScheduleOrderlist = new List<ScheduleOrder>();
+                    }
+
+                    if (_Syndata.SchedulePeriodlist == null)
+                    {
+                        _Syndata.SchedulePeriodlist = new List<SchedulePeriod>();
+                    }
+
+                    if (_Syndata.StoreNewslist == null)
+                    {
+                        _Syndata.StoreNewslist = new List<StoreNews>();
+                    }
+
+                    #endregion
+
 
                     //去重
 
@@ -1652,7 +1962,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=ShopInfo" + "&ServerMac=" + Method.ServerMac;
+            var url = Method.MallSite + "API/Push/CloudDataSend?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=ShopInfo" + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -1672,6 +1982,65 @@ namespace FrontCenter.AppCode
                     Input_PullShopInfoData _Syndata = (Input_PullShopInfoData)Newtonsoft.Json.JsonConvert.DeserializeObject(_r.Data.ToString(), syndata.GetType());
 
                     bool nochange = true;
+
+                    #region 修正null值
+
+                    if (_Syndata.AreaInfolist == null)
+                    {
+                        _Syndata.AreaInfolist = new List<AreaInfo>();
+                    }
+                    if (_Syndata.Buildinglist == null)
+                    {
+                        _Syndata.Buildinglist = new List<Building>();
+                    }
+
+                    if (_Syndata.Floorlist == null)
+                    {
+                        _Syndata.Floorlist = new List<Floor>();
+                    }
+
+
+                    if (_Syndata.MallBuildinglist == null)
+                    {
+                        _Syndata.MallBuildinglist = new List<MallBuilding>();
+                    }
+
+
+                    if (_Syndata.ParkingLotlist == null)
+                    {
+                        _Syndata.ParkingLotlist = new List<ParkingLot>();
+                    }
+
+                    if (_Syndata.ParkingSpacelist == null)
+                    {
+                        _Syndata.ParkingSpacelist = new List<ParkingSpace>();
+                    }
+
+                    if (_Syndata.ShopAccountlist == null)
+                    {
+                        _Syndata.ShopAccountlist = new List<ShopAccount>();
+                    }
+
+                    if (_Syndata.ShopFormatlist == null)
+                    {
+                        _Syndata.ShopFormatlist = new List<ShopFormat>();
+                    }
+
+                    if (_Syndata.ShopNumlist == null)
+                    {
+                        _Syndata.ShopNumlist = new List<ShopNum>();
+                    }
+
+                    if (_Syndata.Shopslist == null)
+                    {
+                        _Syndata.Shopslist = new List<Shops>();
+                    }
+
+                    if (_Syndata.ShopToDevicelist == null)
+                    {
+                        _Syndata.ShopToDevicelist = new List<ShopToDevice>();
+                    }
+                    #endregion
 
                     //去重
 
@@ -2044,7 +2413,7 @@ namespace FrontCenter.AppCode
             string _EncryptionKey = Method.StringToPBKDF2Hash(key);
 
             _EncryptionKey = System.Net.WebUtility.UrlEncode(_EncryptionKey);
-            var url = Method.MallSite + "API/Cdn/SendSynData?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=File"+"&ServerMac="+Method.ServerMac + "&ServerMac=" + Method.ServerMac;
+            var url = Method.MallSite + "API/Push/CloudDataSend?CusID=" + Method.CusID + "&CheckTime=" + dtime + "&Token=" + _EncryptionKey + "&Type=File"+"&ServerMac="+Method.ServerMac + "&ServerMac=" + Method.ServerMac;
             try
             {
                 var client = new HttpClient
@@ -2068,6 +2437,14 @@ namespace FrontCenter.AppCode
                     //去重
 
 
+                    #region 修正null值
+
+                    if (_Syndata.AssetFilelist == null)
+                    {
+                        _Syndata.AssetFilelist = new List<AssetFile>();
+                    }
+               
+                    #endregion
                     _Syndata.AssetFilelist = _Syndata.AssetFilelist.Distinct().ToList();
                    
 

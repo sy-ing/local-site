@@ -190,7 +190,7 @@ namespace FrontCenter.Controllers.device
 
 
             //调用云端接口创建设备
-            var url = Method.MallSite + "/API/IOT/AddDevice";
+            var url = Method.MallSite + "API/IOT/AddDevice";
             _Result = Method.PostMothsToObj(url, inputStr);
             if (_Result.Code == "200")
             {

@@ -25,9 +25,14 @@ namespace FrontCenter
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IHostingEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+                    .SetBasePath(env.ContentRootPath)
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                    .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -44,15 +49,15 @@ namespace FrontCenter
             //注册服务器地址
             Method.ServerAddr = Configuration.GetConnectionString("ServerAddress");
 
-            //注册客户唯一代码
-            // Method.CusID = Configuration.GetConnectionString("CusID");
+         
 
-            //注册云服务器地址
-           // Method.PlatformAddr = Configuration.GetConnectionString("PlatformAddress");
+
 
 
             //注册商户管理网站地址
             Method.MallSite = Configuration.GetConnectionString("MallPlatAddress");
+
+            Method.OSSServer = Configuration.GetConnectionString("OSSServer");
 
             Method.FileServer = Configuration.GetConnectionString("FileServer");
             
@@ -62,12 +67,12 @@ namespace FrontCenter
             services.AddDbContext<ContextString>(options =>
  options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+            //services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            //    options.CheckConsentNeeded = context => true;
+            //    options.MinimumSameSitePolicy = SameSiteMode.None;
+            //});
 
 
             //设置接收文件长度的最大值。
@@ -92,8 +97,10 @@ namespace FrontCenter
             {
                 services.AddHangfire(x => x.UseSqlServerStorage(s));
             }
-
+            
+           
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -101,7 +108,7 @@ namespace FrontCenter
         {
 
             //初始化数据库
-         //   DbInitializer.Initialize(context);
+            DbInitializer.Initialize(context);
             Method._hostingEnvironment = env;
           //  Method._context = context;
 
@@ -131,13 +138,12 @@ namespace FrontCenter
 
 
             //启用Session
-            app.UseSession();
+           // app.UseSession();
 
             //启用跨域访问配置
             app.UseCors("CorsSample");
 
-            //初始化数据库
-          //  DbInitializer.Initialize(context);
+
 
           
 
@@ -146,7 +152,7 @@ namespace FrontCenter
 
             Method.ServerMac = Method.GetServerMac();
 
-            ServerIOTHelper.CreateServerToIOT();
+          
             app.UseHttpsRedirection();
             app.UseCookiePolicy();
 
@@ -160,8 +166,29 @@ namespace FrontCenter
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+
+
+                routes.MapRoute(
+               name: "MS",
+                template: "{MallSite=MallSite}/{API=API}/{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+         name: "API",
+          template: "{API=API}/{controller=Home}/{action=Index}/{id?}");
+
+
+                routes.MapRoute(
+         name: "area",
+          template: "{MallSite=MallSite}/{controller=Home}/{action=Index}/{id?}");
             });
 
+            //注册客户唯一代码
+            Method.CusID = Method.GetCusID(context, Configuration.GetConnectionString("RegKey"));
+            ServerIOTHelper.CreateServerToIOT();
+
+            ServerIOTHelper.ServerSubIOT();
+
+            Method.PullDataFromCloud();
             string IsStartHF = Configuration.GetConnectionString("HangfireStart");
 
             if (IsStartHF == "true")
@@ -174,10 +201,19 @@ namespace FrontCenter
                     Authorization = new[] { new CustomAuthorizeFilter() }
                 });
 
+            
+
                 //更新服务器状态
                 RecurringJob.AddOrUpdate(
 () => Method.UpdateDevState(),
 Cron.Minutely);
+                RecurringJob.AddOrUpdate(
+() =>  Method.PullDataFromCloud(),
+Cron.Daily());
+                RecurringJob.AddOrUpdate(
+() => ServerIOTHelper.ServerSubIOT(),
+Cron.Daily());
+
             }
         }
 

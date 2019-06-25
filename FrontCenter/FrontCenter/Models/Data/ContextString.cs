@@ -141,9 +141,12 @@ namespace FrontCenter.Models.Data
 
         public DbSet<ServerIOT> ServerIOT { get; set; }
 
+        public DbSet<ProjectInfo> ProjectInfo { get; set; }
         #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ProjectInfo>().ToTable("ProjectInfo");
+
             modelBuilder.Entity<ServerIOT>().ToTable("ServerIOT");
             modelBuilder.Entity<DevAppDetails>().ToTable("DevAppDetails");
             modelBuilder.Entity<DeviceIOT>().ToTable("DeviceIOT");

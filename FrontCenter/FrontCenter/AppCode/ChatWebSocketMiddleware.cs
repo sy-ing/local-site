@@ -37,7 +37,7 @@ namespace FrontCenter.AppCode
             //当前连接
             var currentSocket = await context.WebSockets.AcceptWebSocketAsync();
 
-            var socketId = context.Request.Query["IP"];
+            var socketId = context.Request.Query["Code"];
 
             //获取客户端IP
             // var remoteIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress;

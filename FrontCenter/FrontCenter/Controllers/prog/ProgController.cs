@@ -965,17 +965,40 @@ namespace FrontCenter.Controllers.prog
                 DateTime dtime = DateTime.Now.AddDays(-5).Date;
 
 
+                //var list = await (from pg in dbContext.ProgramToGroup
+                //                  join pr in dbContext.Programs on pg.ProgramCode equals pr.Code
+                //                  join sc in dbContext.ScreenInfo on pr.ProgScreenInfo equals sc.Code into ProS
+                //                  from ps in ProS.DefaultIfEmpty()
+                //                  where pg.GroupCode == model.Code
+                //                  select new
+                //                  {
+
+                //                      ID = pr.ID,
+                //                      pr.Code,
+                //                      PreviewSrc = Method.OSSServer + pr.PreviewSrc,
+                //                      ProgramName = pr.ProgramName,
+                //                      ProgType = pr.ProgType,
+                //                      ProgScreenInfo = ps.SName,
+                //                      ScreenCode = ps.Code,
+                //                      LaunchTime = pr.LaunchTime.ToString("yyyy-MM-dd HH:mm:mm"),
+                //                      ExpiryDate = pr.ExpiryDate.ToString("yyyy-MM-dd HH:mm:mm"),
+                //                      SwitchMode = pr.SwitchMode,
+                //                      SwitchTime = pr.SwitchTime,
+                //                      ScreenMatch = pr.ScreenMatch,
+                //                      Order = pg.Order
+                //                  }).OrderBy(i => i.Order).ToListAsync();
+
                 var list = await (from pg in dbContext.ProgramToGroup
                                   join pr in dbContext.Programs on pg.ProgramCode equals pr.Code
                                   join sc in dbContext.ScreenInfo on pr.ProgScreenInfo equals sc.Code into ProS
                                   from ps in ProS.DefaultIfEmpty()
-                                  where pg.GroupCode == model.Code
+                                  where pg.GroupCode == model.Code && pr.LaunchTime <= DateTime.Now && pr.ExpiryDate >= DateTime.Now
                                   select new
                                   {
 
                                       ID = pr.ID,
                                       pr.Code,
-                                      PreviewSrc = Method.OSSServer + pr.PreviewSrc,
+                                      PreviewSrc = Method.ServerAddr + pr.PreviewSrc,
                                       ProgramName = pr.ProgramName,
                                       ProgType = pr.ProgType,
                                       ProgScreenInfo = ps.SName,

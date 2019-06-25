@@ -222,6 +222,28 @@ namespace FrontCenter.Controllers.prog
                 parameters[0].Value = model.ScreenCode;  //给参数赋值
                 parameters[1].Value = model.MallCode;  //给参数赋值
 
+                //var list = await dbContext.Output_ProgramGroupQuery.FromSql(@"select 
+                //                                                                     a.ID
+                //                                                                     ,a.Code
+                //                                                                     ,a.GroupName
+                //                                                                     ,a.ScreenInfoCode
+                //                                                                     ,a.AddTime
+                //                                                                     ,b.SName as ScreenInfo
+                //                                                                     ,count(distinct(c.Code)) as ProgramCount
+                //                                                                     from ProgramGroup a 
+                //                                                                     left join ScreenInfo b on a.ScreenInfoCode = b.Code
+                //                                                                     left join ProgramToGroup c on a.Code = c.GroupCode
+                //                                                                     where 
+                //                                                                     (@ScreenCode = '' or a.ScreenInfoCode = @ScreenCode) and a.MallCode = @MallCode
+                //                                                                     group by 
+                //                                                                     a.ID
+                //                                                                     ,a.Code
+                //                                                                     ,a.GroupName
+                //                                                                     ,a.ScreenInfoCode
+                //                                                                     ,a.AddTime
+                //                                                                     ,b.SName 
+                //                                                                     order by ProgramCount desc ", parameters).ToListAsync();
+
                 var list = await dbContext.Output_ProgramGroupQuery.FromSql(@"select 
                                                                                      a.ID
                                                                                      ,a.Code
@@ -233,8 +255,10 @@ namespace FrontCenter.Controllers.prog
                                                                                      from ProgramGroup a 
                                                                                      left join ScreenInfo b on a.ScreenInfoCode = b.Code
                                                                                      left join ProgramToGroup c on a.Code = c.GroupCode
+																					 left join Programs d on c.ProgramCode = d.Code
                                                                                      where 
-                                                                                     (@ScreenCode = '' or a.ScreenInfoCode = @ScreenCode) and a.MallCode = @MallCode
+                                                                                     (@ScreenCode = '' or a.ScreenInfoCode = @ScreenCode) 
+																					 and d.LaunchTime <= getdate() and GETDATE() <= d.ExpiryDate
                                                                                      group by 
                                                                                      a.ID
                                                                                      ,a.Code
@@ -242,7 +266,7 @@ namespace FrontCenter.Controllers.prog
                                                                                      ,a.ScreenInfoCode
                                                                                      ,a.AddTime
                                                                                      ,b.SName 
-                                                                                     order by ProgramCount desc ", parameters).ToListAsync();
+                                                                                     order by ProgramCount desc", parameters).ToListAsync();
 
                 list = list.Where(i => (string.IsNullOrEmpty(model.SearchKey) || i.GroupName.Contains(model.SearchKey))).ToList();
 

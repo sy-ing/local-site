@@ -17,6 +17,10 @@ namespace FrontCenter.ViewModels
         public List<Permission> Permissionlist { get; set; }
 
         public List<Menu> Menulist { get; set; }
+        public List<ContainerBG> ContainerBGlist { get; set; }
+        public List<TimeRelate> TimeRelatelist { get; set; }
+        public List<DataDict> DataDictlist { get; set; }
+        
 
     }
 

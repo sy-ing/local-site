@@ -126,6 +126,59 @@ namespace FrontCenter.AppCode
             return _R;
         }
 
+        public static string GetCusID(ContextString dbContext, string regkey)
+        {
+            var prj = dbContext.ProjectInfo.Where(i => i.RegKey == regkey).FirstOrDefault();
+            if (prj == null)
+            {
+                var url = Method.MallSite + "API/CDN/GetCusID";
+                QianMuResult qianMuResult = new QianMuResult();
+                var param = new { RegKey = regkey };
+                try
+                {
+                    qianMuResult = Method.PostMothsToObj(url, JsonHelper.SerializeJSON(param));
+
+                    if (qianMuResult.Code == "200")
+                    {
+                        dbContext.ProjectInfo.Add(new ProjectInfo
+                        {
+                            AddTime = DateTime.Now,
+                            Code = Guid.NewGuid().ToString(),
+                            CusID = qianMuResult.Data.ToString(),
+                            RegKey = regkey,
+                            UpdateTime = DateTime.Now
+                        });
+                        if (dbContext.SaveChanges() > 0)
+                        {
+                            return qianMuResult.Data.ToString();
+                        }
+                        else
+                        {
+                            return string.Empty;
+                        }
+                    }
+                    else
+                    {
+                        return string.Empty;
+                    }
+                }
+                catch (Exception)
+                {
+
+                    return string.Empty;
+                }
+              
+
+            }
+            else
+            {
+               return prj.CusID;
+            }
+            
+
+
+        }
+
         public static string GetServerMac()
         {
             var networks = NetworkInterface.GetAllNetworkInterfaces();
@@ -464,6 +517,20 @@ namespace FrontCenter.AppCode
         public static async Task<bool> StartDownTask()
         {
             return await HttpDldFile.DownTask();
+        }
+
+        public static async Task<bool> PullDataFromCloud()
+        {
+            Pull pull = new Pull();
+            await pull.PullAppData();
+            await pull.PullDevData();
+            await pull.PullFileData();
+            await pull.PullInitData();
+            await pull.PullProgramData();
+            await pull.PullReviewData();
+            await pull.PullShopInfoData();
+            await pull.PullSystemData();;
+            return true;
         }
     }
 }

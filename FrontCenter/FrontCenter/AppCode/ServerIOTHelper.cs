@@ -23,42 +23,50 @@ namespace FrontCenter.AppCode
             {
                 var servermac = Method.GetServerMac().Replace(":", "");
                 //调用云端接口创建设备
-                var url = Method.MallSite + "/API/IOT/AddFrontServer";
+                var url = Method.MallSite + "API/IOT/AddFrontServer";
                 var data = new
                 {
                     ServerMac = servermac,
                     MallCode = Method.CusID
 
                 };
-                _Result = Method.PostMothsToObj(url, JsonHelper.SerializeJSON(data));
-                if (_Result.Code == "200")
+                try
                 {
-                    IOTReturn _IOTReturn = new IOTReturn();
-
-                    _IOTReturn = (IOTReturn)Newtonsoft.Json.JsonConvert.DeserializeObject(_Result.Data.ToString(), _IOTReturn.GetType());
-
-                    dbContext.ServerIOT.Add(new Models.ServerIOT
+                    _Result = Method.PostMothsToObj(url, JsonHelper.SerializeJSON(data));
+                    if (_Result.Code == "200")
                     {
-                        AddTime = DateTime.Now,
-                        Code = Guid.NewGuid().ToString(),
-                        Key = _IOTReturn.Key,
-                        Name = _IOTReturn.UserName,
-                        ServerMac = servermac,
-                        UpdateTime = DateTime.Now
-                    });
+                        IOTReturn _IOTReturn = new IOTReturn();
+
+                        _IOTReturn = (IOTReturn)Newtonsoft.Json.JsonConvert.DeserializeObject(_Result.Data.ToString(), _IOTReturn.GetType());
+
+                        dbContext.ServerIOT.Add(new Models.ServerIOT
+                        {
+                            AddTime = DateTime.Now,
+                            Code = Guid.NewGuid().ToString(),
+                            Key = _IOTReturn.Key,
+                            Name = _IOTReturn.UserName,
+                            ServerMac = servermac,
+                            UpdateTime = DateTime.Now
+                        });
+                    }
+
+
+
+
+                    if (dbContext.SaveChanges() >= 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
-
-
-
-
-                if ( dbContext.SaveChanges() >= 0)
-                {
-                    return true;
-                }
-                else
+                catch (Exception)
                 {
                     return false;
                 }
+           
 
             }
             else
@@ -76,24 +84,28 @@ namespace FrontCenter.AppCode
         }
 
 
-        public static bool ServerSubIOT()
+        public  static void ServerSubIOT()
         {
             DbContextOptions<ContextString> options = new DbContextOptions<ContextString>();
             ContextString dbContext = new ContextString(options);
             //QianMuResult _Result = new QianMuResult();
             var serveriot = dbContext.ServerIOT.FirstOrDefault();
 
-            if (serveriot == null)
+            if (serveriot != null)
             {
-                MqttClient mqttClient = new MqttClient(Method.BaiduIOT, 1883, serveriot.ServerMac, serveriot.Name, serveriot.Key);
-                mqttClient.Sub();
-                return false;
+                ServerMqttClient mqttClient = new ServerMqttClient(Method.BaiduIOT, 1883, serveriot.ServerMac, serveriot.Name, serveriot.Key);
+                
+                 mqttClient.InitAsync();
+                //await mqttClient.PublishAsync(serveriot.ServerMac, "online");
+             //    mqttClient.Sub();
+               // return false;
 
             }
             else
             {
-                return true;
+               // return true;
             }
+     
 
 
         }

@@ -154,7 +154,7 @@ namespace FrontCenter.AppCode
                 //取第一个任务
                 var task = list.FirstOrDefault();
 
-                var taskfile = await dbContext.AssetFiles.Where(i => i.Code == task.Code).FirstOrDefaultAsync();
+                var taskfile = await dbContext.AssetFiles.Where(i => i.Code == task.FileCode).FirstOrDefaultAsync();
 
                 //文件无效
                 if (taskfile == null)
@@ -169,7 +169,7 @@ namespace FrontCenter.AppCode
                 else
                 {
                     //下载文件
-                    var suc = Download(Method.MallSite + taskfile.FilePath, Method._hostingEnvironment.WebRootPath + taskfile.FilePath);
+                    var suc = Download(Method.OSSServer + taskfile.FilePath, Method._hostingEnvironment.WebRootPath + taskfile.FilePath);
 
                     if (suc)
                     {
