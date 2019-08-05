@@ -519,7 +519,7 @@ namespace FrontCenter.AppCode
             return await HttpDldFile.DownTask();
         }
 
-        public static async Task<bool> PullDataFromCloud()
+        public async static  Task<bool> PullDataFromCloud()
         {
             Pull pull = new Pull();
             await pull.PullAppData();

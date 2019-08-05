@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FrontCenter.AppCode;
+using FrontCenter.Models;
 using FrontCenter.Models.Data;
 using Hangfire;
 using Hangfire.Annotations;
@@ -186,7 +187,7 @@ namespace FrontCenter
             Method.CusID = Method.GetCusID(context, Configuration.GetConnectionString("RegKey"));
             ServerIOTHelper.CreateServerToIOT();
 
-            ServerIOTHelper.ServerSubIOT();
+
 
             Method.PullDataFromCloud();
             string IsStartHF = Configuration.GetConnectionString("HangfireStart");
@@ -208,9 +209,14 @@ namespace FrontCenter
 () => Method.UpdateDevState(),
 Cron.Minutely);
                 RecurringJob.AddOrUpdate(
-() =>  Method.PullDataFromCloud(),
+() =>   Method.PullDataFromCloud(),
 Cron.Daily());
+                ServerIOTHelper.ServerSubIOT();
+               // var _thisjobId = BackgroundJob.Enqueue(() => ServerIOTHelper.ServerSubIOT());
 
+                //                RecurringJob.AddOrUpdate(
+                //() => ServerIOTHelper.ServerPublishIOT(subReturn.mqttClient,subReturn.serveriot),
+                //Cron.Minutely);
 
             }
         }

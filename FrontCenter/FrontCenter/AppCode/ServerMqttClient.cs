@@ -18,6 +18,7 @@ namespace FrontCenter.AppCode
         // private Class_Log log = new Class_Log(); //日志记录文件
         private static MqttClient Instance = null;
         private static IMqttClient mqttClient = null;
+    
         private string MqttServer = "malldevice.mqtt.iot.gz.baidubce.com";
         private int MqttPort = 1883;
         private string ClientId = "";
@@ -39,16 +40,21 @@ namespace FrontCenter.AppCode
 
         public async void InitAsync()
         {
+            QMLog qMLog = new QMLog();
             if (mqttClient == null)
             {
+                qMLog.WriteLogToFile("创建", "调用初始化", 0);
                 mqttClient = new MqttFactory().CreateMqttClient();
-                //if (!mqttClient.IsConnected) {
+
+
+
+                if (!mqttClient.IsConnected) {
                 await mqttClientConnectAsync();
-                // }
+                 }
                 mqttClient.Connected += MqttClient_Connected;
                 mqttClient.Disconnected += MqttClient_Disconnected;
 
-                Sub();
+               // Sub();
             }
         }
 
@@ -61,7 +67,7 @@ namespace FrontCenter.AppCode
 
         private async void MqttClient_Disconnected(object sender, MqttClientDisconnectedEventArgs e)
         {
-            mqttClientConnectAsync();
+           await  mqttClientConnectAsync();
             //throw new NotImplementedException();
         }
 
@@ -72,21 +78,36 @@ namespace FrontCenter.AppCode
 
         public async Task mqttClientConnectAsync()
         {
+            QMLog qMLog = new QMLog();
+           
             var options = new MqttClientOptions
             {
                 ClientId = ClientId,
                 Credentials = new MqttClientCredentials
                 {
                     Username = Username,
-                    Password = Password,
+                    Password = Password
+                    
                 },
                 ChannelOptions = new MqttClientTcpOptions
                 {
                     Server = MqttServer,
-                    Port = MqttPort,
+                    Port = MqttPort
+                   
                 }
             };
-            await mqttClient.ConnectAsync(options);
+            qMLog.WriteLogToFile("创建", JsonConvert.SerializeObject(options), 0);
+            // qMLog.WriteLogToFile("MqttClientConnectAsync", JsonConvert.SerializeObject(options),0);
+            try
+            {
+                await mqttClient.ConnectAsync(options);
+            }
+            catch (Exception e)
+            {
+
+                qMLog.WriteLogToFile("连接", e.ToString(), 0);
+            }
+           
 
         }
 
@@ -96,7 +117,17 @@ namespace FrontCenter.AppCode
         private void MqttClient_ApplicationMessageReceived(object sender, MqttApplicationMessageReceivedEventArgs e)
         {
             string payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+            if (payload == null)
+            {
+                return;
+            }
             Dictionary<string, object> dic = JsonConvert.DeserializeObject<Dictionary<string, object>>(payload);
+
+            if (!dic.ContainsKey("desired"))
+            {
+                return;
+            }
+      
             Dictionary<string, object> dicDesired = JsonConvert.DeserializeObject<Dictionary<string, object>>(dic["desired"].ToString());
             if (dicDesired != null && dicDesired.Count > 0)
             {
@@ -120,7 +151,11 @@ namespace FrontCenter.AppCode
         {
             try
             {
-                // var jsonstr = "{\"reported\": {\"AppName\": \"汉千目字\"}}";
+
+              
+
+
+
                 var jsonstr = "{\"reported\": " + reportedStr + "}";
                 var appMsg = new MqttApplicationMessage
                 {
@@ -133,6 +168,13 @@ namespace FrontCenter.AppCode
             }
             catch (Exception e)
             {
+             
+                    //await mqttClientConnectAsync();
+                    //mqttClient.Connected += MqttClient_Connected;
+                    //mqttClient.Disconnected += MqttClient_Disconnected;
+
+                    //Sub();
+            
                 log.WriteLogToFile(e.Message, "mqtt");
             }
         }
@@ -160,7 +202,8 @@ namespace FrontCenter.AppCode
         {
             try
             {
-                log.WriteLogToFile(msg, "WebSocketLog");
+                log.WriteLogToFile("IOTMsg",msg, 0);
+              //  log.WriteLogToFile(msg, "WebSocketLog");
 
                 string type = "";
                 Dictionary<string, Object> dic = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, Object>>(msg.ToLower());
@@ -248,7 +291,8 @@ namespace FrontCenter.AppCode
             }
             catch (Exception ex)
             {
-                log.WriteLogToFile(ex.ToString(), "WebSocketLog");
+              //  log.WriteLogToFile(ex.ToString(), "WebSocketLog");
+                log.WriteLogToFile("IOTMsg", ex.ToString(), 0);
 
             }
         }

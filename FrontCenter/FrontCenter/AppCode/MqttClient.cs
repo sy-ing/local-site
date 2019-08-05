@@ -15,7 +15,7 @@ namespace FrontCenter.AppCode
     {
         private QMLog log = new QMLog();
        // private Class_Log log = new Class_Log(); //日志记录文件
-        private static MqttClient Instance = null;
+        //private static MqttClient Instance = null;
         private static IMqttClient mqttClient = null;
         private  string MqttServer = "malldevice.mqtt.iot.gz.baidubce.com";
         private  int MqttPort = 1883;

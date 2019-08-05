@@ -36,9 +36,14 @@ namespace FrontCenter.AppCode
 
             //当前连接
             var currentSocket = await context.WebSockets.AcceptWebSocketAsync();
-
+            QMLog qMLog = new QMLog();
+            qMLog.WriteLogToFile("socketId", context.Request.Query["Code"]);
             var socketId = context.Request.Query["Code"];
 
+            if (string.IsNullOrEmpty(socketId))
+            {
+                return;
+            }
             //获取客户端IP
             // var remoteIpAddress = context.Request.HttpContext.Connection.RemoteIpAddress;
 
@@ -55,7 +60,7 @@ namespace FrontCenter.AppCode
             //将客户端IP作为标识符
             //string socketId = ip;
 
-
+          
 
             //判断是否为已有连接，不是的话创建
             if (!_sockets.ContainsKey(socketId))
@@ -68,6 +73,7 @@ namespace FrontCenter.AppCode
                 _sockets.TryGetValue(socketId, out socket);
                 if (_sockets.TryRemove(socketId, out socket))
                 {
+                    qMLog.WriteLogToFile("添加socketId", context.Request.Query["Code"]);
                     _sockets.TryAdd(socketId, currentSocket);
                 }
             }

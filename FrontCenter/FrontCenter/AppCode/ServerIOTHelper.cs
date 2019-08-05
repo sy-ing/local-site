@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FrontCenter.AppCode
@@ -86,44 +87,92 @@ namespace FrontCenter.AppCode
         }
 
 
-        public  static void ServerSubIOT()
+        public async static Task<bool> ServerSubIOT()
         {
             DbContextOptions<ContextString> options = new DbContextOptions<ContextString>();
             ContextString dbContext = new ContextString(options);
-            //QianMuResult _Result = new QianMuResult();
+
             var serveriot = dbContext.ServerIOT.FirstOrDefault();
 
+            ServerMqttClient mqttClient = new ServerMqttClient(Method.BaiduIOT, 1883, serveriot.ServerMac, serveriot.Name, serveriot.Key);
+
+            mqttClient.InitAsync();
+
+            mqttClient.Sub();
+
+            var isStop = false;
             if (serveriot != null)
             {
-                ServerMqttClient mqttClient = new ServerMqttClient(Method.BaiduIOT, 1883, serveriot.ServerMac, serveriot.Name, serveriot.Key);
+                Thread thread = new Thread(new ThreadStart(()=> {
                 
-                 mqttClient.InitAsync();
+                        while (!isStop)
+                        {
 
-                var _thisjobId = BackgroundJob.Schedule(() => ServerPublishIOT(mqttClient, serveriot), TimeSpan.FromMinutes(5));
+                            Thread.Sleep(120000);
 
 
+                        try
+                        {
 
-                //await mqttClient.PublishAsync(serveriot.ServerMac, "online");
-                //    mqttClient.Sub();
-                // return false;
+                            var jsonstr = "{\"reported\": " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "}";
+                            //await mqttClient.PublishAsync(serveriot.ServerMac, jsonstr);
+                             mqttClient.PublishAsync(serveriot.ServerMac, jsonstr);
+                    
 
+
+                        }
+                        catch (Exception ex)
+                        {
+                            QMLog qMLog = new QMLog();
+                            qMLog.WriteLogToFile("", ex.ToString());
+
+                        }
+                        finally
+                        {
+
+                            Thread.Sleep(10000);
+                        }
+                    }
+
+               
+
+            }));
+                thread.IsBackground = true;
+                thread.Start();
             }
-            else
-            {
-               // return true;
-            }
-     
+      
 
+       
+           
 
+            return true;
         }
 
-        public static async  void ServerPublishIOT(ServerMqttClient mqttClient, ServerIOT serveriot)
+
+ 
+
+        public async static  Task<bool> ServerPublishIOT(ServerMqttClient mqttClient, ServerIOT serveriot)
         {
-           await   mqttClient.PublishAsync(serveriot.ServerMac, JsonConvert.SerializeObject(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
+            var _r = true;
+            try
+            {
+                var jsonstr = "{\"reported\": " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "}";
+                await mqttClient.PublishAsync(serveriot.ServerMac, jsonstr);
+            }
+            catch (Exception ex)
+            {
 
-            var _thisjobId = BackgroundJob.Schedule(() => ServerPublishIOT(mqttClient, serveriot), TimeSpan.FromMinutes(5));
+                QMLog qMLog = new QMLog();
+                qMLog.WriteLogToFile("", "发送心跳包失败" + ex.ToString());
+                _r = false;
+            }
+          
+
+
+
+            return _r;
         }
 
-   
+
     }
 }

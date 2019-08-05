@@ -49,6 +49,7 @@ namespace FrontCenter.ViewModels
 
 
         public List<DevAppOnline> DevAppOnlinelist { get; set; }
+        public List<DeviceIOT> DeviceIOTlist { get; set; }
 
     }
     public class Input_PullProgramData
@@ -64,6 +65,8 @@ namespace FrontCenter.ViewModels
         public List<Subtitle> Subtitlelist { get; set; }
 
         public List<SubtitleToDeviceGroup> SubtitleToDeviceGrouplist { get; set; }
+
+        public List<DeviceBill> DeviceBilllist { get; set; }
     }
 
     public class Input_PullAppData

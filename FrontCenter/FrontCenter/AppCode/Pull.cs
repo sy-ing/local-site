@@ -720,7 +720,11 @@ namespace FrontCenter.AppCode
                     }
 
 
-                
+                    if (_Syndata.DeviceIOTlist == null)
+                    {
+                        _Syndata.DeviceIOTlist = new List<DeviceIOT>();
+                    }
+
                     #endregion
 
                     //去重
@@ -730,7 +734,7 @@ namespace FrontCenter.AppCode
                     _Syndata.DeviceGrouplist = _Syndata.DeviceGrouplist.Distinct().ToList();
                     _Syndata.Devicelist = _Syndata.Devicelist.Distinct().ToList();
                     _Syndata.DeviceToGrouplist = _Syndata.DeviceToGrouplist.Distinct().ToList();
-
+                    _Syndata.DeviceIOTlist = _Syndata.DeviceIOTlist.Distinct().ToList();
 
                     //设备运行的应用
                     if (_Syndata.DevAppOnlinelist.Count() > 0)
@@ -864,7 +868,31 @@ namespace FrontCenter.AppCode
                         }
                     }
 
+                    //设备-组  关系
+                    if (_Syndata.DeviceIOTlist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var cloudData in _Syndata.DeviceIOTlist)
+                        {
+                            var localData = await dbContext.DeviceIOT.Where(i => i.Code == cloudData.Code).FirstOrDefaultAsync();
 
+                            if (localData == null)
+                            {
+                                localData = new DeviceIOT();
+                                SynDataHelper.MakeEqual(cloudData, localData);
+                                dbContext.DeviceIOT.Add(localData);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(cloudData, localData);
+
+                                dbContext.DeviceIOT.Update(localData);
+
+                            }
+
+
+                        }
+                    }
 
 
                     if (await dbContext.SaveChangesAsync() > 0 || nochange)
@@ -998,6 +1026,10 @@ namespace FrontCenter.AppCode
                         _Syndata.LiveToDevlist = new List<LiveToDev>();
                     }
 
+                    if (_Syndata.DeviceBilllist == null)
+                    {
+                        _Syndata.DeviceBilllist = new List<DeviceBill>();
+                    }
 
 
                     #endregion
@@ -1012,7 +1044,7 @@ namespace FrontCenter.AppCode
                     _Syndata.SubtitleToDeviceGrouplist = _Syndata.SubtitleToDeviceGrouplist.Distinct().ToList();
                     _Syndata.Livelist = _Syndata.Livelist.Distinct().ToList();
                     _Syndata.LiveToDevlist = _Syndata.LiveToDevlist.Distinct().ToList();
-
+                    _Syndata.DeviceBilllist = _Syndata.DeviceBilllist.Distinct().ToList();
                     //节目
                     if (_Syndata.Programslist.Count() > 0)
                     {
@@ -1220,6 +1252,33 @@ namespace FrontCenter.AppCode
                                 SynDataHelper.MakeEqual(cloudData, localData);
 
                                 dbContext.LiveToDev.Update(localData);
+
+                            }
+
+
+                        }
+                    }
+
+
+                    //设备小程序节目清单
+                    if (_Syndata.DeviceBilllist.Count() > 0)
+                    {
+                        nochange = false;
+                        foreach (var cloudData in _Syndata.DeviceBilllist)
+                        {
+                            var localData = await dbContext.DeviceBill.Where(i => i.Code == cloudData.Code).FirstOrDefaultAsync();
+
+                            if (localData == null)
+                            {
+                                localData = new DeviceBill();
+                                SynDataHelper.MakeEqual(cloudData, localData);
+                                dbContext.DeviceBill.Add(localData);
+                            }
+                            else
+                            {
+                                SynDataHelper.MakeEqual(cloudData, localData);
+
+                                dbContext.DeviceBill.Update(localData);
 
                             }
 

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static FrontCenter.ViewModels.DeviceManageViewModel;
 
 namespace FrontCenter.Models.Data
 {
@@ -143,8 +144,15 @@ namespace FrontCenter.Models.Data
 
         public DbSet<ProjectInfo> ProjectInfo { get; set; }
         #endregion
+        public DbSet<Outpput_ProgList> Outpput_ProgList { get; set; }
+        public DbSet<Output_ProgramList> Output_ProgramList { get; set; }
+
+        public DbSet<DeviceBill> DeviceBill { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<DeviceBill>().ToTable("DeviceBill");
+
             modelBuilder.Entity<ProjectInfo>().ToTable("ProjectInfo");
 
             modelBuilder.Entity<ServerIOT>().ToTable("ServerIOT");

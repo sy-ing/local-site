@@ -391,13 +391,14 @@ namespace FrontCenter.Controllers.device
                 }
 
                 #region 文件上传到OSS服务器并删除本地存档
+                var prjinfo = dbContext.ProjectInfo.FirstOrDefault();
                 FileStream fileFacestream = new FileStream(filepath, FileMode.Open);
                 byte[] btFace = new byte[fileFacestream.Length];             //调用read读取方法    
                 fileFacestream.Read(btFace, 0, btFace.Length);
                 fileFacestream.Close();
                 string faceImg = Convert.ToBase64String(btFace);
                 qm.WriteLogToFile("截图", "准备上传");
-                var filedata = new { FileName = filename, FileStr = faceImg };
+                var filedata = new { FileName = filename, FileStr = faceImg ,MallCode = prjinfo.CusID };
                 var param = JsonHelper.SerializeJSON(filedata);
                 var _r = Method.PostMoths(Method.FileServer + "/FileManage/UpLoadScreenshotFiles", param);
                 qm.WriteLogToFile("截图", _r);

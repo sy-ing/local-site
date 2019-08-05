@@ -156,8 +156,8 @@ namespace FrontCenter.Controllers.system
 
             if (screensaver == null)
             {
-                _Result.Code = "2";
-                _Result.Msg = "获取失败";
+                _Result.Code = "200";
+                _Result.Msg = "获取成功";
                 _Result.Data = new { Time = 30, ScreenType = 0 };
             }
             else
